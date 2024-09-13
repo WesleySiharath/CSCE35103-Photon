@@ -9,5 +9,5 @@ Nathan Wojtowicz
 | ------------- | ------------- |
 | --------  | Anthony Johnson  |
 | Stepty  | Stephen Ni  |
-| --------  | Wesley Siharth |
-| --------  | Nathan Wojtowicz  |
+| WesleySiharath  | Wesley Siharth |
+| NathanWojo  | Nathan Wojtowicz  |
