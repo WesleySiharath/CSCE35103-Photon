@@ -9,7 +9,7 @@
 | NathanWojo  | Nathan Wojtowicz  |
 
 # Getting Started
-# 1. Install git
+## 1. Install git
 ```
 sudo apt-get install git
 ```
