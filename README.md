@@ -3,7 +3,7 @@
 ## Team 6
 | Github Name  | Name |
 | ------------- | ------------- |
-| --------  | Anthony Johnson  |
+| CodingGuy1337  | Anthony Johnson  |
 | Stepty  | Stephen Ni  |
 | WesleySiharath/Yechamo  | Wesley Siharth |
 | NathanWojo  | Nathan Wojtowicz  |
