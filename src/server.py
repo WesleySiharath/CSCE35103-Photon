@@ -6,7 +6,7 @@ try:
     # Connect to local database
     conn = psycopg2.connect(
             host='localhost',
-            database="photon-db",
+            database="photon",
             user='student',
             password='student')
 except psycopg2.Error as err:
