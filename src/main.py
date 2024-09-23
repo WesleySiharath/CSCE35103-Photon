@@ -5,7 +5,8 @@ def Splash():
     try:
     
         img = Image.open("../assets/logo.jpg")  
-        img = img.resize((300, 300), Image.LANCZOS)  
+        # fix to fill windows for every screen
+        img = img.resize((1000, 1000), Image.LANCZOS)  
         photo = ImageTk.PhotoImage(img)
         label = tk.Label(splash, image=photo)
         label.image = photo 
