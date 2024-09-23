@@ -7,8 +7,8 @@ try:
     conn = psycopg2.connect(
             host='localhost',
             database="photon-db",
-            user='postgres',
-            password='')
+            user='student',
+            password='student')
 except psycopg2.Error as err:
         print(f"Error: {err}")
 
