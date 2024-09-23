@@ -7,8 +7,8 @@ try:
     conn = psycopg2.connect(
             host='localhost',
             database="photon-db",
-            user='student',
-            password='student')
+            user='postgres',
+            password='')
 except psycopg2.Error as err:
         print(f"Error: {err}")
 
@@ -63,7 +63,7 @@ def delete_player(player_id):
         cursor = conn.cursor()
     
         #check if player exists
-        cursor.execute('SELECT * FROM players WHERE id = %s', (player_id))
+        cursor.execute(f'SELECT * FROM players WHERE id = {player_id}')
         player = cursor.fetchone()
         
         if player is None:
@@ -72,7 +72,7 @@ def delete_player(player_id):
             return None
         else: 
             #delete the player if they exist
-            cursor.execute('DELETE FROM players WHERE id = %s', (player_id))
+            cursor.execute(f'DELETE FROM players WHERE id = {player_id}')
             conn.commit()
             
             print(f"Player {player_id} has been deleted. rip")
@@ -90,6 +90,8 @@ def start_game():
     add_player(69, 'Diddy')
     list_players()
     delete_player(69)
+    delete_player(2)
+    delete_player(3)
     list_players()
     conn.close()
 
