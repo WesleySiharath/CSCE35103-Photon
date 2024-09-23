@@ -55,17 +55,44 @@ def list_players():
 
         for player in players:
             print(player)
+            
+#delete a player from the table
+def delete_player(player_id):
+    #open a cursor to perform database operations
+    try:
+        cursor = conn.cursor()
+    
+        #check if player exists
+        cursor.execute('SELECT * FROM players WHERE id = %s', (player_id))
+        player = cursor.fetchone()
+        
+        if player is None:
+            print(f"Player {player_id} doesn't exist")
+            cursor.close()
+            return None
+        else: 
+            #delete the player if they exist
+            cursor.execute('DELETE FROM players WHERE id = %s', (player_id))
+            conn.commit()
+            
+            print(f"Player {player_id} has been deleted. rip")
+            
+        cursor.close()
+            
+    except psycopg2.Error as err:
+        print(f"Error: {err}")
 
 def start_game():
     #  run Splash Screen
     #  run Player Entry Screen
     add_player(2, 'John')
     add_player(3, 'West')
+    add_player(69, 'Diddy')
+    list_players()
+    delete_player(69)
     list_players()
     conn.close()
 
 
 
 start_game()
-
-
