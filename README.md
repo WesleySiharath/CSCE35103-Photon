@@ -14,6 +14,9 @@
 sudo apt-get install git
 ```
 
+```
+sudo apt-get install python3-tk
+```
 ## 2. Fork git repository
 `git clone <repository>`
 
