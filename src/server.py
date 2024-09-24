@@ -6,7 +6,8 @@ try:
     # Connect to local database
     conn = psycopg2.connect(
             host='localhost',
-            database="photon-db",
+            # update user, password, database for virtual machine (student, student, photon) user for Mac is postgres
+            database='photon',
             user='student',
             password='student')
 except psycopg2.Error as err:
