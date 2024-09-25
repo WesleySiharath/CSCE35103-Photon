@@ -1,98 +1,76 @@
-import psycopg2
-import python_udpclient
+import tkinter as tk
+from PIL import Image, ImageTk
 
-# Always try to connect to database
-try:
-    # Connect to local database
-    conn = psycopg2.connect(
-            host='localhost',
-            database="photon-db",
-            user='postgres',
-            password='')
-except psycopg2.Error as err:
-        print(f"Error: {err}")
-
-
-# Add new players into db
-def add_player(player_id, codename):
-    # Open a cursor to perform database operations  
-    cur = conn.cursor()
-
-    # Get players data from table 
-    select_query = "SELECT * FROM players"
-    cur.execute(select_query)
-    players = cur.fetchall()
-
-    # Check for duplicate players
-    for player in players:
-        if player_id == player[0]:
-            print(f"Error: womp womp, same id:{player[0]} for player: {player[1]}")
-            return None
-    
-    # Insert new player into player db
-    cur.execute('INSERT INTO players (id, codename)'
-                'VALUES (%s, %s)',
-                (player_id, codename))
-    
-    conn.commit()
-
-    print(f"Player {codename} added successfully!")
-
-    cur.close()
-
-    python_udpclient.send_equipment_code(str(player_id))
-
-
-# List all players from table 
-def list_players():
-        # Open a cursor to perform database operations  
-        cur = conn.cursor()
-
-        # Get players data from table 
-        select_query = "SELECT * FROM players"
-        cur.execute(select_query)
-        players = cur.fetchall()
-
-        for player in players:
-            print(player)
-            
-#delete a player from the table
-def delete_player(player_id):
-    #open a cursor to perform database operations
+def Splash():
     try:
-        cursor = conn.cursor()
     
-        #check if player exists
-        cursor.execute('SELECT * FROM players WHERE id = %s', (player_id))
-        player = cursor.fetchone()
+        img = Image.open("../assets/logo.jpg")  
+        # fix to fill windows for every screen
+        img = img.resize((1000, 1000), Image.LANCZOS)  
+        photo = ImageTk.PhotoImage(img)
+        label = tk.Label(splash, image=photo)
+        label.image = photo 
+        label.pack()
+
+       
+        splash.after(3000, teamRegistration) 
+    except Exception as e:
+        print(f"Error loading image: {e}")
+
+def teamRegistration():
+    print("Transitioning to team registration...")
+    splash.destroy() 
+
+    registration = tk.Tk() 
+    registration.title("Team Registration")
+    registration.attributes('-fullscreen', True)  
+    registration.configure(bg="#d3d3d3")  
+ 
+    redFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#981A2B")
+    redFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+    tk.Label(redFrame, text="Red Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
+
+    for _ in range(10): 
+        rowFrame = tk.Frame(redFrame, bg="#BA1F33")
+        rowFrame.pack(pady=5)
+        tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        idInput = tk.Entry(rowFrame, width=10)
+        idInput.pack(side=tk.LEFT, padx=5)
         
-        if player is None:
-            print(f"Player {player_id} doesn't exist")
-            cursor.close()
-            return None
-        else: 
-            #delete the player if they exist
-            cursor.execute('DELETE FROM players WHERE id = %s', (player_id))
-            conn.commit()
-            
-            print(f"Player {player_id} has been deleted. rip")
-            
-        cursor.close()
-            
-    except psycopg2.Error as err:
-        print(f"Error: {err}")
+        tk.Label(rowFrame, text="Name", bg="White").pack(side=tk.LEFT, padx=5)
+        nameInput = tk.Entry(rowFrame, width=20)
+        nameInput.pack(side=tk.LEFT, padx=5)
+        
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: print("Red Team submitted"), bg="black", fg="white")
+    submitRed.pack(pady=10)
 
-def start_game():
-    #  run Splash Screen
-    #  run Player Entry Screen
-    add_player(2, 'John')
-    add_player(3, 'West')
-    add_player(69, 'Diddy')
-    list_players()
-    delete_player(69)
-    list_players()
-    conn.close()
+    # Blue Team Table
+    blueFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#1A2498")
+    blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
+
+    for _ in range(10):  
+        rowFrame = tk.Frame(blueFrame, bg="#4120BA")
+        rowFrame.pack(pady=5)
+        tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        idInput = tk.Entry(rowFrame, width=10)
+        idInput.pack(side=tk.LEFT, padx=5)
+        tk.Label(rowFrame, text="Name:", bg="White").pack(side=tk.LEFT, padx=5)
+        nameInput = tk.Entry(rowFrame, width=20)
+        nameInput.pack(side=tk.LEFT, padx=5)
+
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: print("Blue Team submitted"), bg="black", fg="white")
+    submitBlueButton.pack(pady=10)
+
+    registration.bind("<Escape>", lambda event: registration.destroy())  
+    registration.mainloop() 
 
 
+splash = tk.Tk()
+splash.title("Splash Screen")
+splash.attributes('-fullscreen', True)  
+splash.configure(bg="#d3d3d3")  
 
-start_game()
+Splash()
+splash.mainloop()
