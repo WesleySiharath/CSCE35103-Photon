@@ -1,5 +1,4 @@
 import tkinter as tk
-import server.py
 from PIL import Image, ImageTk
 
 def Splash():
@@ -60,21 +59,14 @@ def teamRegistration():
         tk.Label(rowFrame, text="Name:", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
-        redEntries[i] = {'id': idInput, 'name': nameInput}
 
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(redEntries) , bg="black", fg="white")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: print("Blue Team submitted"), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
 
     registration.bind("<Escape>", lambda event: registration.destroy())  
     registration.mainloop() 
 
-def addPlayers(entries):
-    for x in entries:
-        if x.id != null and x.name != null:
-            server.add_player(x.id, x.name)
-        else:
-            print("name empty")
-            
+
 splash = tk.Tk()
 splash.title("Splash Screen")
 splash.attributes('-fullscreen', True)  
