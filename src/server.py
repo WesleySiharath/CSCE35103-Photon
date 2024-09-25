@@ -1,4 +1,5 @@
 import psycopg2
+import main
 import python_udpclient
 
 # Always try to connect to database
@@ -6,7 +7,8 @@ try:
     # Connect to local database
     conn = psycopg2.connect(
             host='localhost',
-            database="photon",
+            # update user, password, database for virtual machine (student, student, photon) user for Mac is postgres
+            database='photon',
             user='student',
             password='student')
 except psycopg2.Error as err:
@@ -82,10 +84,13 @@ def delete_player(player_id):
     except psycopg2.Error as err:
         print(f"Error: {err}")
 
+# send equipment ID to server
+def send_equipment_id(equipment_id):
+     python_udpclient.send_equipment_code(equipment_id)
+
 def start_game():
-    #  run Splash Screen
-    #  run Player Entry Screen
     add_player(2, 'John')
+    add_player(3, 'West')
     add_player(3, 'West')
     add_player(69, 'Diddy')
     list_players()
