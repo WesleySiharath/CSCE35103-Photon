@@ -49,14 +49,14 @@ while(True):
     message = bytesAddressPair[0]
     address = bytesAddressPair[1]
     
-    clientMsg = "Message from Client:{}".format(message)
+    clientMsg = message.decode("utf-8")
     clientIP  = "Client IP Address:{}".format(address)
     
     print(clientMsg)
     print(clientIP)
        
     # receiving codes
-    receivedCode = message.decode('utf-8')
+    receivedCode = clientMsg
     
     if receivedCode == '202':
         code202Received()
