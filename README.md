@@ -19,7 +19,7 @@ sudo apt-get install python3-tk
 ```
 ## 2. Fork git repository
 ```
-`git clone https://github.com/Stepty/CSCE35103-Photon.git`
+git clone https://github.com/Stepty/CSCE35103-Photon.git
 ```
 
 ## 3. Open project directory in console
