@@ -40,8 +40,10 @@ def add_player(player_id, codename):
     print(f"Player {codename} added successfully!")
 
     cur.close()
-
-    python_udpclient.send_equipment_code(str(player_id))
+    
+    # ask user for equipment id in terminal and sends to udp server
+    equipment_code = input(f"Enter Equipment Id for {codename}: ")
+    send_equipment_id(equipment_code)
 
 
 # List all players from table 
