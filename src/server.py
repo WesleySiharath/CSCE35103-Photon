@@ -1,5 +1,4 @@
 import psycopg2
-import main
 import python_udpclient
 
 # Always try to connect to database
@@ -94,10 +93,10 @@ def start_game():
     add_player(3, 'West')
     add_player(69, 'Diddy')
     list_players()
-    delete_player(69)
-    delete_player(2)
-    delete_player(3)
-    list_players()
+    # delete_player(69)
+    # delete_player(2)
+    # delete_player(3)
+    # list_players()
     conn.close()
 
 
