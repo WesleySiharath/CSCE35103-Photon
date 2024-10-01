@@ -18,7 +18,9 @@ sudo apt-get install git
 sudo apt-get install python3-tk
 ```
 ## 2. Fork git repository
+```
 `git clone https://github.com/Stepty/CSCE35103-Photon.git`
+```
 
 ## 3. Open project directory in console
 ```
@@ -62,12 +64,12 @@ In other terminal, make sure you are in the root directory of the repository to 
 ```
 python3 python_udpserver.py
 ```
-## 8. Run main.py for splash screen and database connection
+## 8. Run main.py in other terminal for splash screen and database connection
 ```
 python3 main.py
 ```
 
-## Altenatively run server.py for just database connection
+### Altenatively run server.py for just database connection
 ```
 python3 server.py
 ```
