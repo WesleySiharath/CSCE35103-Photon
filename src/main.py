@@ -4,15 +4,14 @@ from PIL import Image, ImageTk
 
 def Splash():
     try:
-    
+        screen_width = splash.winfo_screenwidth()
+        screen_height = splash.winfo_screenheight()
         img = Image.open("../assets/logo.jpg")  
-        img = img.resize((1000, 1000), Image.LANCZOS)  
+        img = img.resize((screen_width, screen_height), Image.LANCZOS)  
         photo = ImageTk.PhotoImage(img)
         label = tk.Label(splash, image=photo)
         label.image = photo 
         label.pack()
-
-       
         splash.after(3000, teamRegistration) 
     except Exception as e:
         print(f"Error loading image: {e}")
@@ -65,11 +64,12 @@ def teamRegistration():
     submitBlueButton.pack(pady=10)
     
     #create start game button
-    startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#981A2B")
-    startFrame.pack(pady=20)
-    startGame = tk.Button(startFrame, text="Start", command=lambda: end_registration(registration), bg="black", fg="white")
+    startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
+    startFrame.place(relx=0.0, rely=1.0, anchor='sw', x=20, y=-20)
+    startGame = tk.Button(startFrame, text="F3", command=lambda: end_registration(registration), bg="black", fg="white") 
     startGame.pack(pady=10)
 
+    registration.bind("<F3>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: registration.destroy())  
     registration.mainloop() 
 
@@ -88,31 +88,53 @@ def end_registration(registration):
 	registration.destroy()
 	startCountdown()
 	
-	
-def countdown(count):
-    label['text'] = count
 
-    if count > 0:
-        root.after(1000, countdown, count - 1)
-    else:
-        label['text'] = "To be continued"
+def countdown(count):
+    try: 
+        screen_width = Counter.winfo_screenwidth() 
+        screen_height = Counter.winfo_screenheight() 
+        img_path = f"../assets/countdown_images/{count}.tif"
+        
+        img = Image.open(img_path)
+        img = img.resize((screen_width, screen_height), Image.LANCZOS)
+        photo = ImageTk.PhotoImage(img)
+        label.config(image=photo)
+        label.image = photo 
+        
+        if count > 0:
+            Counter.after(1000, countdown, count - 1)
+        elif count == 0:
+            GameAction()
+    except Exception as e:
+        print(f"Error loading image for countdown: {e}")
+        label.config(text="Error loading image")
+
         
 def startCountdown():
-    global label, root
-    root = tk.Tk()
-    root.title("Countdown Timer")
+   global label, Counter
+   Counter = tk.Tk()
+   Counter.title("Countdown Timer")
+   Counter.attributes('-fullscreen', True)
+   Counter.configure(bg="black")
     
-    # Set the window to full screen
-    root.attributes('-fullscreen', True)
-    root.configure(bg="black")  # Set background color to black
-
-    label = tk.Label(root, font=('Helvetica', 48), fg="white", bg="black")  # Set text color to white
-    label.pack(pady=20)
-
-    countdown_time = 10
-    countdown(countdown_time)
+   label = tk.Label(Counter, bg="black")  
+   label.pack(pady=20)
+   
+   countdown_time = 30
+   countdown(countdown_time)
+   
+   Counter.mainloop() 
+ 
+def GameAction():
+    print("Transitioning to GameAction...")
+    Counter.destroy()
+	
+    GameAction = tk.Tk() 
+    GameAction.title("Game Action")
+    GameAction.attributes('-fullscreen', True)  
+    GameAction.configure(bg="#d3d3d3")  
     
-    root.mainloop()       
+	
 
 splash = tk.Tk()
 splash.title("Splash Screen")
