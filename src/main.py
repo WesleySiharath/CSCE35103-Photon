@@ -39,9 +39,8 @@ def teamRegistration():
         tk.Label(rowFrame, text="Name", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
-        redEntries.append({'id': int(idInput), 'name': str(nameInput)})
         
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: addPlayers(redEntries), bg="black", fg="white")
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: print("Red Team submitted"), bg="black", fg="white")
     submitRed.pack(pady=10)
 
     # Blue Team Table
@@ -49,7 +48,7 @@ def teamRegistration():
     blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
-
+    blueEntries = []
     for _ in range(10):  
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
@@ -59,7 +58,7 @@ def teamRegistration():
         tk.Label(rowFrame, text="Name:", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
-        blueEntries.append({'id': int(idInput), 'name': str(nameInput)})
+        blueEntries.append({'id': (idInput), 'name': (nameInput)})
 
     submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
@@ -73,7 +72,17 @@ def teamRegistration():
     registration.bind("<F3>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: registration.destroy())  
     registration.mainloop() 
-    
+
+def addPlayers(entries):
+    for entry in entries:
+
+        player_id = (entry['id'].get()) # Extract ID from entry widget
+        player_name = (entry['name'].get())  # Extract name from entry widget
+
+        if player_id and player_name:
+            server.add_player(player_id, player_name)
+
+
 def end_registration(registration):
 	print("Game Start")
 	registration.destroy()

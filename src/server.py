@@ -16,6 +16,9 @@ except psycopg2.Error as err:
 
 # Add new players into db
 def add_player(player_id, codename):
+    player_id = int(player_id)
+    codename = str(codename)
+
     # Open a cursor to perform database operations  
     cur = conn.cursor()
 
@@ -90,16 +93,7 @@ def send_equipment_id(equipment_id):
      python_udpclient.send_equipment_code(equipment_id)
 
 def start_game():
-    add_player(2, 'John')
-    add_player(3, 'West')
-    add_player(3, 'West')
-    add_player(69, 'Diddy')
     list_players()
-    # delete_player(69)
-    # delete_player(2)
-    # delete_player(3)
-    # list_players()
-    conn.close()
 
 
 
