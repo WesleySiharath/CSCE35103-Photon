@@ -77,7 +77,7 @@ def end_registration(registration):
 	registration.destroy()
 	startCountdown()
 	
-	
+
 def countdown(count):
     try: 
         screen_width = Counter.winfo_screenwidth() 
