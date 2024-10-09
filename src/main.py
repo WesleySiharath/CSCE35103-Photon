@@ -1,3 +1,4 @@
+import server
 import tkinter as tk
 from PIL import Image, ImageTk
 
@@ -38,8 +39,9 @@ def teamRegistration():
         tk.Label(rowFrame, text="Name", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
+        redEntries.append({'id': int(idInput), 'name': str(nameInput)})
         
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: print("Red Team submitted"), bg="black", fg="white")
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: addPlayers(redEntries), bg="black", fg="white")
     submitRed.pack(pady=10)
 
     # Blue Team Table
@@ -47,7 +49,7 @@ def teamRegistration():
     blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
-    blueEntries = {}
+
     for _ in range(10):  
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
@@ -58,9 +60,8 @@ def teamRegistration():
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
         blueEntries.append({'id': int(idInput), 'name': str(nameInput)})
-                           
 
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries) , bg="black", fg="white")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
     
     #create start game button
