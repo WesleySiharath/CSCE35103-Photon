@@ -1,12 +1,12 @@
-import server
 import tkinter as tk
+import server.py
 from PIL import Image, ImageTk
 
 def Splash():
     try:
     
         img = Image.open("../assets/logo.jpg")  
-        img = img.resize((1000, 1000), Image.LANCZOS)  
+        img = img.resize((300, 300), Image.LANCZOS)  
         photo = ImageTk.PhotoImage(img)
         label = tk.Label(splash, image=photo)
         label.image = photo 
@@ -49,7 +49,7 @@ def teamRegistration():
     blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
     tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
-
+    blueEntries = {}
     for _ in range(10):  
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
@@ -59,50 +59,26 @@ def teamRegistration():
         tk.Label(rowFrame, text="Name:", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
+        blueEntries.append({'id': int(idInput), 'name': str(nameInput)})
+                           
 
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: print("Blue Team submitted"), bg="black", fg="white")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries) , bg="black", fg="white")
     submitBlueButton.pack(pady=10)
-    
-    #create start game button
-    startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#981A2B")
-    startFrame.pack(pady=20)
-    startGame = tk.Button(startFrame, text="Start", command=lambda: end_registration(registration), bg="black", fg="white")
-    startGame.pack(pady=10)
 
     registration.bind("<Escape>", lambda event: registration.destroy())  
     registration.mainloop() 
-    
-def end_registration(registration):
-	print("Game Start")
-	registration.destroy()
-	startCountdown()
-	
-	
-def countdown(count):
-    label['text'] = count
 
-    if count > 0:
-        root.after(1000, countdown, count - 1)
-    else:
-        label['text'] = "To be continued"
+def addPlayers(entries):
+    for x in entries:
         
-def startCountdown():
-    global label, root
-    root = tk.Tk()
-    root.title("Countdown Timer")
-    
-    # Set the window to full screen
-    root.attributes('-fullscreen', True)
-    root.configure(bg="black")  # Set background color to black
-
-    label = tk.Label(root, font=('Helvetica', 48), fg="white", bg="black")  # Set text color to white
-    label.pack(pady=20)
-
-    countdown_time = 10
-    countdown(countdown_time)
-    
-    root.mainloop()       
-
+        player_id = entry['id'].get()  # Extract ID from entry widget
+        player_name = entry['name'].get()  # Extract name from entry widget
+        
+        if player_id != null and player_name != null:
+            server.add_player(player_id, player_name)
+        else:
+            print("name empty")
+            
 splash = tk.Tk()
 splash.title("Splash Screen")
 splash.attributes('-fullscreen', True)  
