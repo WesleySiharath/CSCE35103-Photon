@@ -43,7 +43,7 @@ def add_player(player_id, codename, equipment_code):
     for player in players:
         if player_id == player[0]:
             print(f"Error: womp womp, same id:{player[0]} for player: {player[1]}")
-            return 3
+            return player[1]
     
     # Insert new player into player db
     cur.execute('INSERT INTO players (id, codename)'
@@ -55,7 +55,7 @@ def add_player(player_id, codename, equipment_code):
     print(f"Player {codename} added successfully!")
 
     cur.close()
-    
+    equipment_code = str(equipment_code)
     # sends equipment code to udp server
     send_equipment_id(equipment_code)
     
