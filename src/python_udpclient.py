@@ -15,7 +15,7 @@ def send_equipment_code(equipment_code):
     # Send to server using created UDP socket
     UDPClientSocket.sendto(bytesToSend, serverAddressPort)
 
-    msgFromServer = UDPClientSocket.recvfrom(bufferSize)
-    msg = "Message from Server {}".format(msgFromServer[0])
+    msgFromServer = (UDPClientSocket.recvfrom(bufferSize)[0]).decode("utf-8")
+    msg = f"Message from Server: \"{msgFromServer}\""
 
     print(msg)

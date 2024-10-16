@@ -17,21 +17,30 @@ def Splash():
         print(f"Error loading image: {e}")
 
 def teamRegistration():
+    #initialize lists
+    redEntries = []
+    blueEntries = []
+    
     print("Transitioning to team registration...")
     splash.destroy() 
 
     registration = tk.Tk() 
     registration.title("Team Registration")
     registration.attributes('-fullscreen', True)  
-    registration.configure(bg="#d3d3d3")  
- 
+    registration.configure(bg="#d3d3d3")
+
+    # Red Team Table
     redFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#981A2B")
     redFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+    
+    # Title
     tk.Label(redFrame, text="Red Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
 
+    # Input Fields
     for _ in range(10): 
         rowFrame = tk.Frame(redFrame, bg="#BA1F33")
         rowFrame.pack(pady=5)
+
         tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
         idInput = tk.Entry(rowFrame, width=10)
         idInput.pack(side=tk.LEFT, padx=5)
@@ -39,29 +48,47 @@ def teamRegistration():
         tk.Label(rowFrame, text="Name", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
-        
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: print("Red Team submitted"), bg="black", fg="white")
+
+        tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        equipmentIdInput = tk.Entry(rowFrame, width=20)
+        equipmentIdInput.pack(side=tk.LEFT, padx=5)
+
+        redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput})  # Save references to the entry widgets
+
+    # Submit Button  
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: addPlayers(redEntries), bg="black", fg="white")
     submitRed.pack(pady=10)
 
     # Blue Team Table
     blueFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#1A2498")
     blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+    # Title
     tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
-    blueEntries = []
+
+    # Input Fields
     for _ in range(10):  
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
+
         tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
         idInput = tk.Entry(rowFrame, width=10)
         idInput.pack(side=tk.LEFT, padx=5)
+
         tk.Label(rowFrame, text="Name:", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
-        blueEntries.append({'id': (idInput), 'name': (nameInput)})
 
+        tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        equipmentIdInput = tk.Entry(rowFrame, width=20)
+        equipmentIdInput.pack(side=tk.LEFT, padx=5)
+
+        blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput})
+
+    # Submit Button  
     submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
+    
     
     #create start game button
     startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
@@ -69,8 +96,12 @@ def teamRegistration():
     startGame = tk.Button(startFrame, text="F5 \n Start Game", command=lambda: end_registration(registration), bg="black", fg="white") 
     startGame.pack(pady=10)
 
+    #keyboard inputs to start game/countdown, clear player entries, and close window
+    registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
     registration.bind("<F5>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: registration.destroy())  
+    
+    #start main event loop
     registration.mainloop() 
 
 def addPlayers(entries):
@@ -78,9 +109,11 @@ def addPlayers(entries):
 
         player_id = (entry['id'].get()) # Extract ID from entry widget
         player_name = (entry['name'].get())  # Extract name from entry widget
+        player_equipment_id = (entry['equipment_id'].get()) # Extract equipment id fron entry widget
 
-        if player_id and player_name:
-            server.add_player(player_id, player_name)
+        # all three entries have to be filled 
+        if player_id and player_name and player_equipment_id:
+            server.add_player(player_id, player_name, player_equipment_id)
 
 
 def end_registration(registration):
@@ -88,6 +121,16 @@ def end_registration(registration):
 	registration.destroy()
 	startCountdown()
 	
+def clearEntries(redEntries, blueEntries):
+    #go thru red
+    for entry in redEntries:
+        entry['id'].delete(0, tk.END)
+        entry['name'].delete(0, tk.END)
+        
+    #go thru blue
+    for entry in blueEntries:
+        entry['id'].delete(0, tk.END)
+        entry['name'].delete(0, tk.END)
 
 def countdown(count):
     try: 
