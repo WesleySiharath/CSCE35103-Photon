@@ -15,7 +15,7 @@ except psycopg2.Error as err:
 
 
 # Add new players into db
-def add_player(player_id, codename):
+def add_player(player_id, codename, equipment_code):
     player_id = int(player_id)
     codename = str(codename)
 
@@ -44,8 +44,7 @@ def add_player(player_id, codename):
 
     cur.close()
     
-    # ask user for equipment id in terminal and sends to udp server
-    equipment_code = input(f"Enter Equipment Id for {codename}: ")
+    # sends equipment code to udp server
     send_equipment_id(equipment_code)
 
 
