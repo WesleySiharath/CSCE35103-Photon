@@ -27,15 +27,20 @@ def teamRegistration():
     registration = tk.Tk() 
     registration.title("Team Registration")
     registration.attributes('-fullscreen', True)  
-    registration.configure(bg="#d3d3d3")  
- 
+    registration.configure(bg="#d3d3d3")
+
+    # Red Team Table
     redFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#981A2B")
     redFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+    
+    # Title
     tk.Label(redFrame, text="Red Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
 
+    # Input Fields
     for _ in range(10): 
         rowFrame = tk.Frame(redFrame, bg="#BA1F33")
         rowFrame.pack(pady=5)
+
         tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
         idInput = tk.Entry(rowFrame, width=10)
         idInput.pack(side=tk.LEFT, padx=5)
@@ -43,50 +48,47 @@ def teamRegistration():
         tk.Label(rowFrame, text="Name", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
-        
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: print("Red Team submitted"), bg="black", fg="white")
+
+        tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        equipmentIdInput = tk.Entry(rowFrame, width=20)
+        equipmentIdInput.pack(side=tk.LEFT, padx=5)
+
+        redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput})  # Save references to the entry widgets
+
+    # Submit Button  
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: addPlayers(redEntries), bg="black", fg="white")
     submitRed.pack(pady=10)
 
     # Blue Team Table
     blueFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#1A2498")
     blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
 
+    # Title
     tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
+
+    # Input Fields
     for _ in range(10):  
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
+
         tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
         idInput = tk.Entry(rowFrame, width=10)
         idInput.pack(side=tk.LEFT, padx=5)
+
         tk.Label(rowFrame, text="Name:", bg="White").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
-        blueEntries.append({'id': (idInput), 'name': (nameInput)})
 
+        tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        equipmentIdInput = tk.Entry(rowFrame, width=20)
+        equipmentIdInput.pack(side=tk.LEFT, padx=5)
+
+        blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput})
+
+    # Submit Button  
     submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
     
-    #red team table
-    redFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="#981A2B")
-    redFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
-    
-    tk.Label(redFrame, text="Red Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
-
-    for _ in range(10): 
-        rowFrame = tk.Frame(redFrame, bg="#BA1F33")
-        rowFrame.pack(pady=5)
-        tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
-        idInput = tk.Entry(rowFrame, width=10)
-        idInput.pack(side=tk.LEFT, padx=5)
-        
-        tk.Label(rowFrame, text="Name", bg="White").pack(side=tk.LEFT, padx=5)
-        nameInput = tk.Entry(rowFrame, width=20)
-        nameInput.pack(side=tk.LEFT, padx=5)
-
-        redEntries.append({'id': idInput, 'name': nameInput})  # Save references to the entry widgets
-        
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: print("Red Team submitted"), bg="black", fg="white")
-    submitRed.pack(pady=10)
     
     #create start game button
     startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
@@ -107,7 +109,11 @@ def addPlayers(entries):
 
         player_id = (entry['id'].get()) # Extract ID from entry widget
         player_name = (entry['name'].get())  # Extract name from entry widget
+        player_equipment_id = (entry['equipment_id'].get()) # Extract equipment id fron entry widget
 
+        # all three entries have to be filled 
+        if player_id and player_name and player_equipment_id:
+            server.add_player(player_id, player_name, player_equipment_id)
         if player_id and player_name:
             poggers = server.add_player(player_id, player_name)
 

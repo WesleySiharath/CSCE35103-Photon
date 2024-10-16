@@ -46,13 +46,13 @@ def code43Received():
 # Listen for incoming datagrams
 while(True):
     bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0]
+    message = bytesAddressPair[0].decode("utf-8")
     address = bytesAddressPair[1]
     
-    clientMsg = message.decode("utf-8")
+    clientMsg = message
     clientIP  = "Client IP Address:{}".format(address)
     
-    print(clientMsg)
+    print(f"Client Message: \"{clientMsg}\"")
     print(clientIP)
        
     # receiving codes
