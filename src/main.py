@@ -110,21 +110,23 @@ def addPlayers(entries):
         player_name = (entry['name'].get())  # Extract name from entry widget
         player_equipment_id = (entry['equipment_id'].get()) # Extract equipment id fron entry widget
 
-        # all three entries have to be filled 
-        if player_id and player_name and player_equipment_id:
-            poggers = server.add_player(player_id, player_name, player_equipment_id)
-
-            if poggers == 1:
+        poggers = server.add_player(player_id, player_name, player_equipment_id)
+        
+        if poggers == 1:
+            if (player_id):
                 print(f"Player ID {player_id} was invalid. Clearing entry.")
                 entry['id'].delete(0, tk.END)
-            elif poggers == 2:
+        elif poggers == 2:
+            if (player_equipment_id):
                 print(f"Equipment ID {player_equipment_id} was invalid. Clearing entry.")
                 entry['equipment_id'].delete(0, tk.END)
-            elif poggers == 3:
-                print(f"Duplicate Player ID. Clearing entry.")
-                entry['id'].delete(0, tk.END)
-            else:
-                print(f"Nice, player added successfully")
+        elif poggers == 69:
+            print("Added player")
+        else:
+            print(f"Duplicate Player ID.")
+            entry['name'].delete(0, tk.END)
+            entry['name'].insert(tk.END, poggers)
+
         
 
 def end_registration(registration):
