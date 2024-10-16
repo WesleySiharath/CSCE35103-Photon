@@ -89,7 +89,6 @@ def teamRegistration():
     submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
     
-    
     #create start game button
     startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     startFrame.place(relx=0.0, rely=1.0, anchor='sw', x=20, y=-20)
@@ -113,8 +112,20 @@ def addPlayers(entries):
 
         # all three entries have to be filled 
         if player_id and player_name and player_equipment_id:
-            server.add_player(player_id, player_name, player_equipment_id)
+            poggers = server.add_player(player_id, player_name, player_equipment_id)
 
+            if poggers == 1:
+                print(f"Player ID {player_id} was invalid. Clearing entry.")
+                entry['id'].delete(0, tk.END)
+            elif poggers == 2:
+                print(f"Equipment ID {player_equipment_id} was invalid. Clearing entry.")
+                entry['equipment_id'].delete(0, tk.END)
+            elif poggers == 3:
+                print(f"Duplicate Player ID. Clearing entry.")
+                entry['id'].delete(0, tk.END)
+            else:
+                print(f"Nice, player added successfully")
+        
 
 def end_registration(registration):
 	print("Game Start")
@@ -126,11 +137,16 @@ def clearEntries(redEntries, blueEntries):
     for entry in redEntries:
         entry['id'].delete(0, tk.END)
         entry['name'].delete(0, tk.END)
+        entry['equipment_id'].delete(0, tk.END)
         
     #go thru blue
     for entry in blueEntries:
         entry['id'].delete(0, tk.END)
         entry['name'].delete(0, tk.END)
+        entry['equipment_id'].delete(0, tk.END)
+        
+    #clear in server
+    server.clearEntries()
 
 def countdown(count):
     try: 
