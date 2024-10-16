@@ -16,7 +16,13 @@ except psycopg2.Error as err:
 
 # Add new players into db
 def add_player(player_id, codename):
-    player_id = int(player_id)
+    #make sure player id is an int
+    try:
+        player_id = int(player_id)
+    except ValueError:
+        print(f"Nuh uh: {player_id} is not a valid integer")
+        return False
+    
     codename = str(codename)
 
     # Open a cursor to perform database operations  
@@ -31,7 +37,7 @@ def add_player(player_id, codename):
     for player in players:
         if player_id == player[0]:
             print(f"Error: womp womp, same id:{player[0]} for player: {player[1]}")
-            return None
+            return False
     
     # Insert new player into player db
     cur.execute('INSERT INTO players (id, codename)'
@@ -47,6 +53,8 @@ def add_player(player_id, codename):
     # ask user for equipment id in terminal and sends to udp server
     equipment_code = input(f"Enter Equipment Id for {codename}: ")
     send_equipment_id(equipment_code)
+    
+    return True
 
 
 # List all players from table 
