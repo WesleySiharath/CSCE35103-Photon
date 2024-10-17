@@ -89,12 +89,17 @@ def teamRegistration():
     submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
     
-    
     #create start game button
     startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     startFrame.place(relx=0.0, rely=1.0, anchor='sw', x=20, y=-20)
     startGame = tk.Button(startFrame, text="F5 \n Start Game", command=lambda: end_registration(registration), bg="black", fg="white") 
     startGame.pack(pady=10)
+    
+    #create f12 button
+    clearFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
+    clearFrame.place(relx=0.0, rely=1.0, anchor='sw', x=160, y=-20) 
+    clearGame = tk.Button(clearFrame, text="F12 \n Clear Entries", command=lambda: clearEntries(redEntries, blueEntries), bg="black", fg="white") 
+    clearGame.pack(pady=10)
 
     #keyboard inputs to start game/countdown, clear player entries, and close window
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
@@ -111,10 +116,24 @@ def addPlayers(entries):
         player_name = (entry['name'].get())  # Extract name from entry widget
         player_equipment_id = (entry['equipment_id'].get()) # Extract equipment id fron entry widget
 
-        # all three entries have to be filled 
-        if player_id and player_name and player_equipment_id:
-            server.add_player(player_id, player_name, player_equipment_id)
+        poggers = server.add_player(player_id, player_name, player_equipment_id)
+        
+        if poggers == 1:
+            if (player_id):
+                print(f"Player ID {player_id} was invalid. Clearing entry.")
+                entry['id'].delete(0, tk.END)
+        elif poggers == 2:
+            if (player_equipment_id):
+                print(f"Equipment ID {player_equipment_id} was invalid. Clearing entry.")
+                entry['equipment_id'].delete(0, tk.END)
+        elif poggers == 69:
+            print("Added player")
+        else:
+            print(f"Duplicate Player ID.")
+            entry['name'].delete(0, tk.END)
+            entry['name'].insert(tk.END, poggers)
 
+        
 
 def end_registration(registration):
 	print("Game Start")
@@ -126,11 +145,16 @@ def clearEntries(redEntries, blueEntries):
     for entry in redEntries:
         entry['id'].delete(0, tk.END)
         entry['name'].delete(0, tk.END)
+        entry['equipment_id'].delete(0, tk.END)
         
     #go thru blue
     for entry in blueEntries:
         entry['id'].delete(0, tk.END)
         entry['name'].delete(0, tk.END)
+        entry['equipment_id'].delete(0, tk.END)
+        
+    #clear in server
+    server.clearEntries()
 
 def countdown(count):
     try: 
@@ -163,7 +187,7 @@ def startCountdown():
    label = tk.Label(Counter, bg="black")  
    label.pack(pady=20)
    
-   countdown_time = 30
+   countdown_time = 3
    countdown(countdown_time)
    
    Counter.mainloop() 
@@ -171,7 +195,7 @@ def startCountdown():
 def GameAction():
     print("Transitioning to GameAction...")
     Counter.destroy()
-	
+    
     GameAction = tk.Tk() 
     GameAction.title("Game Action")
     GameAction.attributes('-fullscreen', True)  
