@@ -15,19 +15,17 @@ except psycopg2.Error as err:
 
 
 # Add new players into db
-def add_player(player_id, codename, equipment_code):
+def add_player(player_id, codename):
+    # if player id  doesn't exists
+    if not player_id:
+        return False
+    
     #make sure player id and equipment code is an int
     try:
         player_id = int(player_id)
     except ValueError:
-        print(f"Nuh uh: {player_id} is not a valid integer")
-        return 1
-    
-    try:
-        equipment_code = int(equipment_code)
-    except ValueError:
-        print(f"Nuh uh: {equipment_code} is not a valid integer")
-        return 2
+        # print(f"Nuh uh: {player_id} is not a valid integer")
+        return False
     
     codename = str(codename)
 
@@ -42,8 +40,12 @@ def add_player(player_id, codename, equipment_code):
     # Check for duplicate players
     for player in players:
         if player_id == player[0]:
-            print(f"Error: womp womp, same id:{player[0]} for player: {player[1]}")
+            # print(f"Error: womp womp, same id:{player[0]} for player: {player[1]}")
             return player[1]
+        
+    # exit if codename doesn't exists
+    if not codename:
+        return False
     
     # Insert new player into player db
     cur.execute('INSERT INTO players (id, codename)'
@@ -55,12 +57,10 @@ def add_player(player_id, codename, equipment_code):
     print(f"Player {codename} added successfully!")
 
     cur.close()
-    equipment_code = str(equipment_code)
-    # sends equipment code to udp server
-    send_equipment_id(equipment_code)
     
-    return 69
+    return True
 
+# Clear server table
 def clearEntries():
     try:
         #open connection
@@ -118,7 +118,7 @@ def delete_player(player_id):
 
 # send equipment ID to server
 def send_equipment_id(equipment_id):
-     python_udpclient.send_equipment_code(equipment_id)
+    python_udpclient.send_equipment_code(str(equipment_id))
 
 def start_game():
     list_players()
