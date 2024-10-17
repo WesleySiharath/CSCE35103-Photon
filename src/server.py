@@ -16,7 +16,19 @@ except psycopg2.Error as err:
 
 # Add new players into db
 def add_player(player_id, codename, equipment_code):
-    player_id = int(player_id)
+    #make sure player id and equipment code is an int
+    try:
+        player_id = int(player_id)
+    except ValueError:
+        print(f"Nuh uh: {player_id} is not a valid integer")
+        return 1
+    
+    try:
+        equipment_code = int(equipment_code)
+    except ValueError:
+        print(f"Nuh uh: {equipment_code} is not a valid integer")
+        return 2
+    
     codename = str(codename)
 
     # Open a cursor to perform database operations  
@@ -31,7 +43,7 @@ def add_player(player_id, codename, equipment_code):
     for player in players:
         if player_id == player[0]:
             print(f"Error: womp womp, same id:{player[0]} for player: {player[1]}")
-            return None
+            return player[1]
     
     # Insert new player into player db
     cur.execute('INSERT INTO players (id, codename)'
@@ -43,10 +55,27 @@ def add_player(player_id, codename, equipment_code):
     print(f"Player {codename} added successfully!")
 
     cur.close()
-    
+    equipment_code = str(equipment_code)
     # sends equipment code to udp server
     send_equipment_id(equipment_code)
+    
+    return 69
 
+def clearEntries():
+    try:
+        #open connection
+        cur = conn.cursor()
+
+        #delete all
+        cur.execute("DELETE FROM players")
+        conn.commit()
+
+        print("Rest in piece; all player deleted")
+        
+        cur.close()
+        
+    except psycopg2.Error as err:
+        print(f"womp womp: {err}")
 
 # List all players from table 
 def list_players():

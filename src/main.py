@@ -96,10 +96,10 @@ def teamRegistration():
     startGame.pack(pady=10)
     
     #create f12 button
-    clearFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
-    clearFrame.place(relx=0.0, rely=1.0, anchor='sw', x=160, y=-20) 
-    clearGame = tk.Button(clearFrame, text="F12 \n Clear Entries", command=lambda: clearEntries(redEntries, blueEntries), bg="black", fg="white") 
-    clearGame.pack(pady=10)
+    startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
+    startFrame.place(relx=0.0, rely=1.0, anchor='sw', x=15, y=-20)
+    startGame = tk.Button(startFrame, text="F12 \n Clear Entries", command=lambda: end_registration(registration), bg="black", fg="white") 
+    startGame.pack(pady=10)
 
     #keyboard inputs to start game/countdown, clear player entries, and close window
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
