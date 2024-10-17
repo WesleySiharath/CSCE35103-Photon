@@ -1,5 +1,7 @@
 import server
 import tkinter as tk
+from tkinter import messagebox
+from tkinter import PhotoImage
 from PIL import Image, ImageTk
 
 def Splash():
@@ -53,10 +55,10 @@ def teamRegistration():
         equipmentIdInput = tk.Entry(rowFrame, width=20)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
 
-        redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput})  # Save references to the entry widgets
+        redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})  # Save references to the entry widgets
 
     # Submit Button  
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: addPlayers(redEntries), bg="black", fg="white")
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: submitPlayers(redEntries), bg="black", fg="white")
     submitRed.pack(pady=10)
 
     # Blue Team Table
@@ -83,10 +85,10 @@ def teamRegistration():
         equipmentIdInput = tk.Entry(rowFrame, width=20)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
 
-        blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput})
+        blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})
 
     # Submit Button  
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: addPlayers(blueEntries), bg="black", fg="white")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
     
     #create start game button
@@ -105,35 +107,72 @@ def teamRegistration():
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
     registration.bind("<F5>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: registration.destroy())  
+    registration.bind("<Return>", lambda event: (submitPlayers(redEntries), submitPlayers(blueEntries)))  
     
     #start main event loop
     registration.mainloop() 
+    
+# Show an error message
+def errorMessage(message):
+   tk.messagebox.showerror("Error", message)
 
-def addPlayers(entries):
+def submitPlayers(entries):
+    readable_entries = []
+
     for entry in entries:
+        if (entry['state'] == "normal"):
+            readable_entries.append(entry)
 
+    for entry in readable_entries:
+        if (addPlayer(entry)):
+            # lock input box for successful entry
+            entry['name'].config(state='readonly')
+            entry['id'].config(state='readonly')
+            entry['equipment_id'].config(state='readonly')
+
+            # lock entry
+            entry['state'] = "locked"
+
+            # exit loop on first succesful entry
+            return None
+
+def addPlayer(entry):
         player_id = (entry['id'].get()) # Extract ID from entry widget
         player_name = (entry['name'].get())  # Extract name from entry widget
         player_equipment_id = (entry['equipment_id'].get()) # Extract equipment id fron entry widget
 
-        poggers = server.add_player(player_id, player_name, player_equipment_id)
-        
-        if poggers == 1:
+        if (server.add_player(player_id, player_name)):
+            # successful entry
+            entry['name'].delete(0, tk.END)
+            entry['name'].insert(tk.END, server.add_player(player_id, player_name))
+        else:
+            # unsuccessful entry, existence of player id
             if (player_id):
                 print(f"Player ID {player_id} was invalid. Clearing entry.")
                 entry['id'].delete(0, tk.END)
-        elif poggers == 2:
-            if (player_equipment_id):
-                print(f"Equipment ID {player_equipment_id} was invalid. Clearing entry.")
-                entry['equipment_id'].delete(0, tk.END)
-        elif poggers == 69:
-            print("Added player")
-        else:
-            print(f"Duplicate Player ID.")
-            entry['name'].delete(0, tk.END)
-            entry['name'].insert(tk.END, poggers)
+                errorMessage("Please Input an Integer for player ID")
+                return False
+            else:
+                # player id doesn't exist check next entry
+                return False
+         
+        # send equipment id when added player to player entry screen
+        if player_equipment_id:
+            try:
+                # check equipment code is integer
+                equipment_code = int(player_equipment_id)
 
-        
+                # sends equipment code to udp server
+                server.send_equipment_id(equipment_code)
+                return True
+            except ValueError:
+                entry['equipment_id'].delete(0, tk.END)
+                errorMessage("Please Input an Integer for Equipment ID")
+                return False
+        else:
+            # no equipment id, make operator submit one
+            errorMessage("Please Input an Integer for Equipment ID")
+            return False
 
 def end_registration(registration):
 	print("Game Start")
@@ -143,18 +182,28 @@ def end_registration(registration):
 def clearEntries(redEntries, blueEntries):
     #go thru red
     for entry in redEntries:
+        entry['name'].config(state='normal')
+        entry['id'].config(state='normal')
+        entry['equipment_id'].config(state='normal')
+        entry['state'] = "normal"
+        
         entry['id'].delete(0, tk.END)
         entry['name'].delete(0, tk.END)
         entry['equipment_id'].delete(0, tk.END)
         
     #go thru blue
     for entry in blueEntries:
+        entry['name'].config(state='normal')
+        entry['id'].config(state='normal')
+        entry['equipment_id'].config(state='normal')
+        entry['state'] = "normal"
+
         entry['id'].delete(0, tk.END)
         entry['name'].delete(0, tk.END)
         entry['equipment_id'].delete(0, tk.END)
         
-    #clear in server
-    server.clearEntries()
+    # #clear in server
+    # server.clearEntries()
 
 def countdown(count):
     try: 
@@ -204,6 +253,7 @@ def GameAction():
 	
 
 splash = tk.Tk()
+splash.tk.call('wm', 'iconphoto', splash._w, PhotoImage(file="./../assets/icon.png"))
 splash.title("Splash Screen")
 splash.attributes('-fullscreen', True)  
 splash.configure(bg="#d3d3d3")  
