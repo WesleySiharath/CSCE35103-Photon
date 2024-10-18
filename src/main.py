@@ -107,11 +107,40 @@ def teamRegistration():
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
     registration.bind("<F5>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: registration.destroy())  
-    registration.bind("<Return>", lambda event: (submitPlayers(redEntries), submitPlayers(blueEntries)))  
-    
+    registration.bind("<Return>", lambda event: (submitPlayers(redEntries), submitPlayers(blueEntries)))
+
+    # bind method to registration
+    registration.getAllPlayers = getAllPlayers.__get__(registration)
+
+    # bind entries to registration
+    registration.redEntries = redEntries
+    registration.blueEntries = blueEntries
+
     #start main event loop
     registration.mainloop() 
-    
+
+# if entry is filled with info
+def validEntry(entry):
+    if entry['name'].get() and entry['id'].get() and entry['equipment_id'].get():
+        return True
+    return False
+
+# registration object method to put players into red and blue team
+def getAllPlayers(self):   
+    redTeam = []
+    blueTeam = []
+
+    for entry in self.redEntries:
+        if validEntry(entry):
+            redTeam.append({'id': entry['id'].get(), 'name': entry['name'].get(), 'equipment_id': entry['equipment_id'].get(), 'state': entry['state']})
+
+    for entry in self.blueEntries:
+        if validEntry(entry):
+            blueTeam.append({'id': entry['id'].get(), 'name': entry['name'].get(), 'equipment_id': entry['equipment_id'].get(), 'state': entry['state']})
+
+    return (redTeam, blueTeam)
+
+
 # Show an error message
 def errorMessage(message):
    tk.messagebox.showerror("Error", message)
@@ -173,11 +202,16 @@ def addPlayer(entry):
             # no equipment id, make operator submit one
             errorMessage("Please Input an Integer for Equipment ID")
             return False
+        
 
 def end_registration(registration):
-	print("Game Start")
-	registration.destroy()
-	startCountdown()
+    print("Game Start")
+
+    # grab players from registration screen
+    redTeam, blueTeam = registration.getAllPlayers()
+
+    registration.destroy()
+    startCountdown(redTeam, blueTeam)
 	
 def clearEntries(redEntries, blueEntries):
     #go thru red
@@ -205,7 +239,7 @@ def clearEntries(redEntries, blueEntries):
     # #clear in server
     # server.clearEntries()
 
-def countdown(count):
+def countdown(count, redTeam, blueTeam):
     try: 
         screen_width = Counter.winfo_screenwidth() 
         screen_height = Counter.winfo_screenheight() 
@@ -218,15 +252,15 @@ def countdown(count):
         label.image = photo 
         
         if count > 0:
-            Counter.after(1000, countdown, count - 1)
+            Counter.after(1000, countdown, count - 1, redTeam, blueTeam)
         elif count == 0:
-            GameAction()
+            GameAction(redTeam, blueTeam)
     except Exception as e:
         print(f"Error loading image for countdown: {e}")
         label.config(text="Error loading image")
 
         
-def startCountdown():
+def startCountdown(redTeam, blueTeam):
    global label, Counter
    Counter = tk.Tk()
    Counter.title("Countdown Timer")
@@ -237,12 +271,15 @@ def startCountdown():
    label.pack(pady=20)
    
    countdown_time = 3
-   countdown(countdown_time)
+   countdown(countdown_time, redTeam, blueTeam)
    
    Counter.mainloop() 
  
-def GameAction():
+def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
+
+    # print red and blue team's players info
+    print(redTeam, blueTeam)
     Counter.destroy()
     
     GameAction = tk.Tk() 
