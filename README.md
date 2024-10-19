@@ -52,7 +52,7 @@ Run `pip install -r requirements.txt` in root directory to install needed depend
 pip install -r requirements.txt
 ```
 
-## 6. run program (opens two terminals for udp server and client)
+## 6. Run script to run program (opens two terminals for udp server and client)
 ```
 ./script.sh
 ```
@@ -65,7 +65,7 @@ In other terminal, make sure you are in the root directory of the repository to 
 ```
 . ./photon/bin/activate
 ```
-## 2. cd into src directory
+## 2. cd into src directory for both terminals
 ```
 cd src
 ```
