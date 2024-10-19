@@ -39,7 +39,7 @@ def teamRegistration():
     tk.Label(redFrame, text="Red Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
 
     # Input Fields
-    for _ in range(10): 
+    for _ in range(15): 
         rowFrame = tk.Frame(redFrame, bg="#BA1F33")
         rowFrame.pack(pady=5)
 
@@ -69,7 +69,7 @@ def teamRegistration():
     tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
 
     # Input Fields
-    for _ in range(10):  
+    for _ in range(15):  
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
 
