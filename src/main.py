@@ -58,7 +58,7 @@ def teamRegistration():
         redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})  # Save references to the entry widgets
 
     # Submit Button  
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: submitPlayers(redEntries), bg="black", fg="white")
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: submitPlayers(redEntries, "Red Team"), bg="black", fg="white")
     submitRed.pack(pady=10)
 
     # Blue Team Table
@@ -88,7 +88,7 @@ def teamRegistration():
         blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})
 
     # Submit Button  
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries), bg="black", fg="white")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
     
     #create start game button
@@ -107,7 +107,9 @@ def teamRegistration():
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
     registration.bind("<F5>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: registration.destroy())  
-    registration.bind("<Return>", lambda event: (submitPlayers(redEntries), submitPlayers(blueEntries)))
+    
+    # TEST: return button adds entries from each team 
+    # registration.bind("<Return>", lambda event: (submitPlayers(redEntries, "Red Team"), submitPlayers(blueEntries, "Blue Team")))
 
     # bind method to registration
     registration.getAllPlayers = getAllPlayers.__get__(registration)
@@ -145,7 +147,11 @@ def getAllPlayers(self):
 def errorMessage(message):
    tk.messagebox.showerror("Error", message)
 
-def submitPlayers(entries):
+def submitPlayers(entries, team):
+    # flag to prevent multiple errors
+    player_id_error = False
+    equipment_id_error = False
+
     readable_entries = []
 
     for entry in entries:
@@ -153,7 +159,8 @@ def submitPlayers(entries):
             readable_entries.append(entry)
 
     for entry in readable_entries:
-        if (addPlayer(entry)):
+        success, error_message = addPlayer(entry)
+        if (success):
             # lock input box for successful entry
             entry['name'].config(state='readonly')
             entry['id'].config(state='readonly')
@@ -164,6 +171,19 @@ def submitPlayers(entries):
 
             # exit loop on first succesful entry
             return None
+        
+        if (error_message == "Player_ID_error"):
+            player_id_error = True
+        elif (error_message == "Equipment_ID_error"):
+            equipment_id_error = True
+    
+    # show one error message if error has happened once
+    if player_id_error:
+        errorMessage(f"Please Input an Integer for player ID on {team}")
+        
+    if equipment_id_error:
+        errorMessage(f"Please Input an Integer for Equipment ID on {team}")
+
 
 def addPlayer(entry):
         player_id = (entry['id'].get()) # Extract ID from entry widget
@@ -179,11 +199,10 @@ def addPlayer(entry):
             if (player_id):
                 print(f"Player ID {player_id} was invalid. Clearing entry.")
                 entry['id'].delete(0, tk.END)
-                errorMessage("Please Input an Integer for player ID")
-                return False
+                return (False, "Player_ID_error")
             else:
                 # player id doesn't exist check next entry
-                return False
+                return (False, "")
          
         # send equipment id when added player to player entry screen
         if player_equipment_id:
@@ -193,15 +212,13 @@ def addPlayer(entry):
 
                 # sends equipment code to udp server
                 server.send_equipment_id(equipment_code)
-                return True
+                return (True, "")
             except ValueError:
                 entry['equipment_id'].delete(0, tk.END)
-                errorMessage("Please Input an Integer for Equipment ID")
-                return False
+                return (False, "Equipment_ID_error")
         else:
             # no equipment id, make operator submit one
-            errorMessage("Please Input an Integer for Equipment ID")
-            return False
+            return (False, "Equipment_ID_error")
         
 
 def end_registration(registration):
@@ -210,7 +227,14 @@ def end_registration(registration):
     # grab players from registration screen
     redTeam, blueTeam = registration.getAllPlayers()
 
-    registration.destroy()
+    # check if there are players on both sides
+    if (redTeam and blueTeam):
+        registration.destroy()
+    else:
+        # show error message to add players
+        errorMessage("Add at least 1 player to both sides before starting")
+        return None
+
     startCountdown(redTeam, blueTeam)
 	
 def clearEntries(redEntries, blueEntries):
@@ -270,7 +294,7 @@ def startCountdown(redTeam, blueTeam):
    label = tk.Label(Counter, bg="black")  
    label.pack(pady=20)
    
-   countdown_time = 3
+   countdown_time = 30
    countdown(countdown_time, redTeam, blueTeam)
    
    Counter.mainloop() 
@@ -290,7 +314,6 @@ def GameAction(redTeam, blueTeam):
 	
 
 splash = tk.Tk()
-splash.tk.call('wm', 'iconphoto', splash._w, PhotoImage(file="./../assets/icon.png"))
 splash.title("Splash Screen")
 splash.attributes('-fullscreen', True)  
 splash.configure(bg="#d3d3d3")  
