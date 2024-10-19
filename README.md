@@ -52,26 +52,30 @@ Run `pip install -r requirements.txt` in root directory to install needed depend
 pip install -r requirements.txt
 ```
 
-## 6. cd into src directory
+## 6. run program (opens two terminals for udp server and client)
+```
+./script.sh
+```
+
+## Altenatively manually run programs
+
+## 1. Open another terminal and reactivate venv (if needed) 
+In other terminal, make sure you are in the root directory of the repository to reactivate venv. Then, cd back into src directory.
+
+```
+. ./photon/bin/activate
+```
+## 2. cd into src directory
 ```
 cd src
 ```
-
-## 7. Open another terminal and reactivate venv (if needed) 
-In other terminal, make sure you are in the root directory of the repository to reactivate venv. Then, cd back into src directory.
-
-## 8. Run Udp Server First
+## 3. Run Udp Server First
 ```
 python3 python_udpserver.py
 ```
-## 8. Run main.py in other terminal for splash screen and database connection
+## 4. Run main.py in other terminal for program
 ```
 python3 main.py
-```
-
-### Altenatively run server.py for just database connection
-```
-python3 server.py
 ```
 
 
