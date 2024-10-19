@@ -52,7 +52,7 @@ def teamRegistration():
         nameInput.pack(side=tk.LEFT, padx=5)
 
         tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
-        equipmentIdInput = tk.Entry(rowFrame, width=20)
+        equipmentIdInput = tk.Entry(rowFrame, width=10)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
 
         redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})  # Save references to the entry widgets
@@ -82,7 +82,7 @@ def teamRegistration():
         nameInput.pack(side=tk.LEFT, padx=5)
 
         tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
-        equipmentIdInput = tk.Entry(rowFrame, width=20)
+        equipmentIdInput = tk.Entry(rowFrame, width=10)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
 
         blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})
@@ -107,7 +107,7 @@ def teamRegistration():
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
     registration.bind("<F5>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: registration.destroy())  
-    
+
     # TEST: return button adds entries from each team 
     # registration.bind("<Return>", lambda event: (submitPlayers(redEntries, "Red Team"), submitPlayers(blueEntries, "Blue Team")))
 
