@@ -323,13 +323,13 @@ def GameAction(redTeam, blueTeam):
     # Red Team Header
     redHeaderFrame = tk.Frame(redFrame, bg="#981A2B")
     redHeaderFrame.pack(side=tk.TOP, pady=5, fill=tk.X)
-    tk.Label(redHeaderFrame, text="Red Team", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, padx=240, anchor="w")
+    tk.Label(redHeaderFrame, text="Red Team", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
     tk.Label(redHeaderFrame, text="Score", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, anchor="w")
 
     # Red Team Players
     for player in redTeam:
         rowFrame = tk.Frame(redFrame, bg="#981A2B")
-        rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5, padx=230)
+        rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5)
         tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
 
     # Blue Team Frame
@@ -339,13 +339,13 @@ def GameAction(redTeam, blueTeam):
     # Blue Team Header
     blueHeaderFrame = tk.Frame(blueFrame, bg="#1A2B98")
     blueHeaderFrame.pack(side=tk.TOP, pady=5, fill=tk.X)
-    tk.Label(blueHeaderFrame, text="Blue Team", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, padx=240, anchor="w")
+    tk.Label(blueHeaderFrame, text="Blue Team", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
     tk.Label(blueHeaderFrame, text="Score", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, anchor="w")
 
     # Blue Team Players
     for player in blueTeam:
         rowFrame = tk.Frame(blueFrame, bg="#1A2B98")
-        rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5, padx=230)
+        rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5)
         tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
 
     # Play frame at the bottom
