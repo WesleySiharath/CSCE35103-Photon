@@ -123,7 +123,7 @@ def teamRegistration():
 
 # if entry is filled with info
 def validEntry(entry):
-    if entry['name'].get() and entry['id'].get() and entry['equipment_id'].get():
+    if entry['name'].get() and entry['id'].get() and entry['equipment_id'].get() and entry['state'] == "locked":
         return True
     return False
 
@@ -179,7 +179,7 @@ def submitPlayers(entries, team):
     
     # show one error message if error has happened once
     if player_id_error:
-        errorMessage(f"Please Input an Integer for player ID on {team}")
+        errorMessage(f"Please Input an Integer for player ID or add code name on {team}")
         
     if equipment_id_error:
         errorMessage(f"Please Input an Integer for Equipment ID on {team}")
@@ -302,16 +302,58 @@ def startCountdown(redTeam, blueTeam):
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
 
-    # print red and blue team's players info
-    print(redTeam, blueTeam)
     Counter.destroy()
-    
-    GameAction = tk.Tk() 
+
+    GameAction = tk.Tk()
     GameAction.title("Game Action")
-    GameAction.attributes('-fullscreen', True)  
-    GameAction.configure(bg="#d3d3d3")  
-    
-	
+    GameAction.attributes('-fullscreen', True)
+    GameAction.configure(bg="black")
+
+    # Title
+    tk.Label(GameAction, text="Time Remaining: 00:00", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
+
+    # Create a frame to contain the team frames, aligned horizontally
+    teamFrame = tk.Frame(GameAction, bg="white")
+    teamFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    # Red Team Frame
+    redFrame = tk.Frame(teamFrame, borderwidth=1, relief="solid", bg="#981A2B")
+    redFrame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    # Red Team Header
+    redHeaderFrame = tk.Frame(redFrame, bg="#981A2B")
+    redHeaderFrame.pack(side=tk.TOP, pady=5, fill=tk.X)
+    tk.Label(redHeaderFrame, text="Red Team", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, padx=240, anchor="w")
+    tk.Label(redHeaderFrame, text="Score", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, anchor="w")
+
+    # Red Team Players
+    for player in redTeam:
+        rowFrame = tk.Frame(redFrame, bg="#981A2B")
+        rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5, padx=230)
+        tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
+
+    # Blue Team Frame
+    blueFrame = tk.Frame(teamFrame, borderwidth=1, relief="solid", bg="#1A2B98")
+    blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
+
+    # Blue Team Header
+    blueHeaderFrame = tk.Frame(blueFrame, bg="#1A2B98")
+    blueHeaderFrame.pack(side=tk.TOP, pady=5, fill=tk.X)
+    tk.Label(blueHeaderFrame, text="Blue Team", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, padx=240, anchor="w")
+    tk.Label(blueHeaderFrame, text="Score", font=("Courier New", 24), bg="white", fg="black").pack(side=tk.LEFT, anchor="w")
+
+    # Blue Team Players
+    for player in blueTeam:
+        rowFrame = tk.Frame(blueFrame, bg="#1A2B98")
+        rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5, padx=230)
+        tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
+
+    # Play frame at the bottom
+    playFrame = tk.Frame(GameAction, borderwidth=1, relief="solid", bg="white")
+    playFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10, pady=10)
+    tk.Label(playFrame, text="Game Action", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
+
+    GameAction.mainloop()
 
 splash = tk.Tk()
 splash.title("Splash Screen")
@@ -320,3 +362,4 @@ splash.configure(bg="#d3d3d3")
 
 Splash()
 splash.mainloop()
+
