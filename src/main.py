@@ -43,15 +43,15 @@ def teamRegistration():
         rowFrame = tk.Frame(redFrame, bg="#BA1F33")
         rowFrame.pack(pady=5)
 
-        tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        tk.Label(rowFrame, text="ID:", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         idInput = tk.Entry(rowFrame, width=10)
         idInput.pack(side=tk.LEFT, padx=5)
         
-        tk.Label(rowFrame, text="Name", bg="White").pack(side=tk.LEFT, padx=5)
+        tk.Label(rowFrame, text="Name", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
 
-        tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        tk.Label(rowFrame, text="Equipment ID:", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         equipmentIdInput = tk.Entry(rowFrame, width=10)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
 
@@ -73,15 +73,15 @@ def teamRegistration():
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
 
-        tk.Label(rowFrame, text="ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        tk.Label(rowFrame, text="ID:", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         idInput = tk.Entry(rowFrame, width=10)
         idInput.pack(side=tk.LEFT, padx=5)
 
-        tk.Label(rowFrame, text="Name:", bg="White").pack(side=tk.LEFT, padx=5)
+        tk.Label(rowFrame, text="Name:", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         nameInput = tk.Entry(rowFrame, width=20)
         nameInput.pack(side=tk.LEFT, padx=5)
 
-        tk.Label(rowFrame, text="Equipment ID:", bg="White").pack(side=tk.LEFT, padx=5)
+        tk.Label(rowFrame, text="Equipment ID:", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         equipmentIdInput = tk.Entry(rowFrame, width=10)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
 
