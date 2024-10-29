@@ -211,7 +211,7 @@ def addPlayer(entry):
                 equipment_code = int(player_equipment_id)
 
                 # sends equipment code to udp server
-                server.send_equipment_id(equipment_code)
+                server.send_code(equipment_code)
                 return (True, "")
             except ValueError:
                 entry['equipment_id'].delete(0, tk.END)

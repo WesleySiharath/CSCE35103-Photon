@@ -1,73 +1,81 @@
 import socket
 
-localIP     = "127.0.0.1"
-localPort   = 7501
-bufferSize  = 1024
+# socket setup
+def setup_broadcast_socket(ip, send_port):
+    broadcast_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    broadcast_socket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    broadcast_socket.bind((ip, send_port))
+    return broadcast_socket
 
-# Create a datagram socket
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+def setup_receive_socket(ip, recv_port):
+    receive_socket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    receive_socket.bind((ip, recv_port))
+    return receive_socket
 
-# Bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
-
-print("UDP server up and listening")
-
-count = 0
-
-def code202Received():
+# code handlers
+def handle_code202(broadcast_socket, address):
     print("Code 202 received; game starting")
-    return
+    send_message(broadcast_socket, "Game starting", address)
 
-def code221Received():
-    if count == 0:
-            count += 1
-            return
-    elif count == 1:
-        count += 1
-        return
-    elif count == 2:
-        print("Game ending")
-        count = 0 
-        return
-    return
+def handle_code221(broadcast_socket, address, count):
+    if count < 2:
+        return count + 1
+    print("Game ending")
+    send_message(broadcast_socket, "Game ending", address)
+    return 0
 
-def code53Received():
-    print("Code 53 received")
-    #If code 53 is received, the red base has been scored.
-    #If the player is on the green team, they will receive 100 points and a stylized letter "B" will be added to the left of their codename.
-    return
-    
-def code43Received():
-    print("Code 43 received")
-    #If code 43 is received, the green base has been scored
-    #If the player is on the red team, they will receive 100 points and a stylized letter "B" will be added to the left of their codename.
-    
+def handle_code53(broadcast_socket, address):
+    print("Code 53 received - Red base scored")
+    send_message(broadcast_socket, "Red base scored", address)
 
-# Listen for incoming datagrams
-while(True):
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0].decode("utf-8")
-    address = bytesAddressPair[1]
-    
-    clientMsg = message
-    clientIP  = "Client IP Address:{}".format(address)
-    
-    print(f"Client Message: \"{clientMsg}\"")
-    print(clientIP)
-       
-    # receiving codes
-    receivedCode = clientMsg
-    
-    if receivedCode == '202':
-        code202Received()
-    elif receivedCode == '221':
-        code221Received()
-    elif receivedCode == '53':
-        code53Received()
-    elif receivedCode == '43':
-        code43Received()
+def handle_code43(broadcast_socket, address):
+    print("Code 43 received - Green base scored")
+    send_message(broadcast_socket, "Green base scored", address)
 
-    msgFromServer = f"Received equipment code: {message}"
-    bytesToSend = str.encode(msgFromServer)
-    # Sending a reply to client
-    UDPServerSocket.sendto(bytesToSend, address)
+def send_message(socket, message, address):
+    msg = str.encode(message)
+    socket.sendto(msg, address)
+
+def main():
+    ip = "127.0.0.1"
+    send_port = 7500
+    recv_port = 7501
+    buffer_size = 1024
+
+    # initialize sockets
+    broadcast_socket = setup_broadcast_socket(ip, send_port)
+    receive_socket = setup_receive_socket(ip, recv_port)
+
+    count = 0
+
+    try:
+        while True:
+            # receive message and address from port 7501
+            bytes_address_pair = receive_socket.recvfrom(buffer_size)
+            message, address = bytes_address_pair
+            message = message.decode("utf-8")
+
+            print(f"Client Message: \"{message}\"")
+            print(f"Client IP Address: {address}")
+
+            if message == '202':
+                handle_code202(broadcast_socket, address)
+            elif message == '221':
+                count = handle_code221(broadcast_socket, address, count)
+            elif message == '53':
+                handle_code53(broadcast_socket, address)
+            elif message == '43':
+                handle_code43(broadcast_socket, address)
+            else:
+                # message is a player's equipment code
+                msg_from_server = f"Received equipment code: {message}"
+                send_message(broadcast_socket, msg_from_server, address)
+
+    except KeyboardInterrupt:
+        print("Server is shutting down")
+    finally:
+        broadcast_socket.close()
+        receive_socket.close()
+
+if __name__ == "__main__":
+    main()

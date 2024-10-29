@@ -1,5 +1,26 @@
 import psycopg2
-import python_udpclient
+import socket
+
+msgFromClient       = ""
+serverAddressPort   = ("127.0.0.1", 7501)
+bufferSize          = 1024
+
+# Create a UDP socket at client side
+UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+
+
+def send_code(code):
+    msgFromClient = str(code)
+    bytesToSend = str.encode(msgFromClient)
+    
+    # Send to server using created UDP socket
+    UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+    
+    if code != 221:
+        msgFromServer = (UDPClientSocket.recvfrom(bufferSize)[0]).decode("utf-8")
+        msg = f"Message from Server: \"{msgFromServer}\""
+        print(msg)
+    
 
 # Always try to connect to database
 try:
@@ -7,9 +28,9 @@ try:
     conn = psycopg2.connect(
             host='localhost',
             # update user, password, database for virtual machine (student, student, photon) user for Mac is postgres
-            database='photon',
-            user='student',
-            password='student')
+            database='photon-db',
+            user='postgres',
+            password='')
 except psycopg2.Error as err:
         print(f"Error: {err}")
 
@@ -115,10 +136,6 @@ def delete_player(player_id):
             
     except psycopg2.Error as err:
         print(f"Error: {err}")
-
-# send equipment ID to server
-def send_equipment_id(equipment_id):
-    python_udpclient.send_equipment_code(str(equipment_id))
 
 def start_game():
     list_players()
