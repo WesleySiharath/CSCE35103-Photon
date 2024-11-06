@@ -8,6 +8,18 @@ bufferSize          = 1024
 # Create a UDP socket at client side
 UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
+# Always try to connect to database
+try:
+    # Connect to local database
+    conn = psycopg2.connect(
+            host='localhost',
+            # update user, password, database for virtual machine (student, student, photon) user for Mac is postgres
+            database='photon',
+            user='student',
+            password='student')
+except psycopg2.Error as err:
+        print(f"Error: {err}")
+
 
 def send_code(code):
     msgFromClient = str(code)
@@ -20,20 +32,6 @@ def send_code(code):
         msgFromServer = (UDPClientSocket.recvfrom(bufferSize)[0]).decode("utf-8")
         msg = f"Message from Server: \"{msgFromServer}\""
         print(msg)
-    
-
-# Always try to connect to database
-try:
-    # Connect to local database
-    conn = psycopg2.connect(
-            host='localhost',
-            # update user, password, database for virtual machine (student, student, photon) user for Mac is postgres
-            database='photon-db',
-            user='postgres',
-            password='')
-except psycopg2.Error as err:
-        print(f"Error: {err}")
-
 
 # Add new players into db
 def add_player(player_id, codename):
@@ -136,10 +134,3 @@ def delete_player(player_id):
             
     except psycopg2.Error as err:
         print(f"Error: {err}")
-
-def start_game():
-    list_players()
-
-
-
-start_game()

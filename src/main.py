@@ -58,7 +58,7 @@ def teamRegistration():
         redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})  # Save references to the entry widgets
 
     # Submit Button  
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: submitPlayers(redEntries, "Red Team"), bg="black", fg="white")
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: submitPlayers(redEntries, "Red Team"), bg="black", fg="Black")
     submitRed.pack(pady=10)
 
     # Blue Team Table
@@ -88,19 +88,19 @@ def teamRegistration():
         blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})
 
     # Submit Button  
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="white")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="Black")
     submitBlueButton.pack(pady=10)
     
     #create start game button
     startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     startFrame.place(relx=0.0, rely=1.0, anchor='sw', x=20, y=-20)
-    startGame = tk.Button(startFrame, text="F5 \n Start Game", command=lambda: end_registration(registration), bg="black", fg="white") 
+    startGame = tk.Button(startFrame, text="F5 \n Start Game", command=lambda: end_registration(registration), bg="black", fg="Black") 
     startGame.pack(pady=10)
     
     #create f12 button
     clearFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     clearFrame.place(relx=0.0, rely=1.0, anchor='sw', x=180, y=-20)
-    clearFrame = tk.Button(clearFrame, text="F12 \n Clear Entries", command=lambda: clearEntries(redEntries, blueEntries), bg="black", fg="white") 
+    clearFrame = tk.Button(clearFrame, text="F12 \n Clear Entries", command=lambda: clearEntries(redEntries, blueEntries), bg="black", fg="Black") 
     clearFrame.pack(pady=10)
 
     #keyboard inputs to start game/countdown, clear player entries, and close window
