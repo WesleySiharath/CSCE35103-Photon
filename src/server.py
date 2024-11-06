@@ -1,12 +1,6 @@
 import psycopg2
 import socket
 
-msgFromClient       = ""
-serverAddressPort   = ("127.0.0.1", 7501)
-bufferSize          = 1024
-
-# Create a UDP socket at client side
-UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 
 # Always try to connect to database
 try:
@@ -22,16 +16,25 @@ except psycopg2.Error as err:
 
 
 def send_code(code):
+    serverAddressPort   = ("127.0.0.1", 7501)
     msgFromClient = str(code)
     bytesToSend = str.encode(msgFromClient)
+
+    # Create a UDP socket at client side
+    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     
     # Send to server using created UDP socket
-    UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+    try:
+        UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+    except KeyboardInterrupt:
+        print("Server is shutting down")
+    finally:
+        UDPClientSocket.close()
     
-    if code != 221:
-        msgFromServer = (UDPClientSocket.recvfrom(bufferSize)[0]).decode("utf-8")
-        msg = f"Message from Server: \"{msgFromServer}\""
-        print(msg)
+    # if code != 221:
+    #     msgFromServer = (UDPClientSocket.recvfrom(bufferSize)[0]).decode("utf-8")
+    #     msg = f"Message from Server: \"{msgFromServer}\""
+    #     print(msg)
 
 # Add new players into db
 def add_player(player_id, codename):
