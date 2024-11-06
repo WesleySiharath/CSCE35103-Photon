@@ -298,7 +298,17 @@ def startCountdown(redTeam, blueTeam):
    countdown(countdown_time, redTeam, blueTeam)
    
    Counter.mainloop() 
- 
+
+def update_timer(label, remaining_time):
+	
+    if remaining_time > 0:
+        mins, secs = divmod(remaining_time, 60)
+        time_format = f"{mins:02}:{secs:02}"
+        label.config(text=f"Time Remaining: {time_format}")
+        label.after(1000, update_timer, label, remaining_time - 1)
+    else:
+        label.config(text="Time Remaining: 00:00")
+
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
 
@@ -308,10 +318,12 @@ def GameAction(redTeam, blueTeam):
     GameAction.title("Game Action")
     GameAction.attributes('-fullscreen', True)
     GameAction.configure(bg="black")
-
+    remaining_time = 6 * 60
     # Title
-    tk.Label(GameAction, text="Time Remaining: 00:00", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
-
+    timer_label = tk.Label(GameAction, text="Time Remaining: 06:00", font=("Courier New", 24), bg="white", fg="black")
+    timer_label.pack(pady=10)
+	
+    update_timer(timer_label, remaining_time)
     # Create a frame to contain the team frames, aligned horizontally
     teamFrame = tk.Frame(GameAction, bg="white")
     teamFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
