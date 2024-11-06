@@ -1,5 +1,6 @@
 import server
 import tkinter as tk
+import pygame
 from tkinter import messagebox
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
@@ -223,6 +224,10 @@ def addPlayer(entry):
 
 def end_registration(registration):
     print("Game Start")
+    
+    # load/play sounds
+    pygame.mixer.music.load("../assets/sounds/Photon Start.wav")
+    pygame.mixer.music.play()
 
     # grab players from registration screen
     redTeam, blueTeam = registration.getAllPlayers()
