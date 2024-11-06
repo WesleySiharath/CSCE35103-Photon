@@ -320,6 +320,8 @@ def update_timer(label, remaining_time):
         time_format = f"{mins:02}:{secs:02}"
         label.config(text=f"Time Remaining: {time_format}")
         label.after(1000, update_timer, label, remaining_time - 1)
+        if remaining_time == 1:
+            playSound("../assets/sounds/Photon Exit.wav")
     else:
         label.config(text="Time Remaining: 00:00")
 
