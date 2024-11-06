@@ -15,9 +15,19 @@ def Splash():
         label = tk.Label(splash, image=photo)
         label.image = photo 
         label.pack()
+        
         splash.after(3000, teamRegistration) 
+        #sound
+        splash.bind("<Escape>", lambda event: (playSound("..assets/sounds/Photon Close Program.wav")))
     except Exception as e:
         print(f"Error loading image: {e}")
+
+def playSound(path):
+    try:
+        pygame.mixer.music.load(path)
+        pygame.mixer.music.play()
+    except Exception as e:
+        print(f"Error playing sound: {e}")
 
 def teamRegistration():
     #initialize lists
@@ -224,10 +234,6 @@ def addPlayer(entry):
 
 def end_registration(registration):
     print("Game Start")
-    
-    # load/play sounds
-    pygame.mixer.music.load("../assets/sounds/Photon Start.wav")
-    pygame.mixer.music.play()
 
     # grab players from registration screen
     redTeam, blueTeam = registration.getAllPlayers()
@@ -269,6 +275,9 @@ def clearEntries(redEntries, blueEntries):
     # server.clearEntries()
 
 def countdown(count, redTeam, blueTeam):
+    #sound
+    playSound("..assets/sounds/Photon Start.wav")
+    
     try: 
         screen_width = Counter.winfo_screenwidth() 
         screen_height = Counter.winfo_screenheight() 
@@ -316,7 +325,7 @@ def GameAction(redTeam, blueTeam):
 
     # Title
     tk.Label(GameAction, text="Time Remaining: 00:00", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
-
+    
     # Create a frame to contain the team frames, aligned horizontally
     teamFrame = tk.Frame(GameAction, bg="white")
     teamFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
