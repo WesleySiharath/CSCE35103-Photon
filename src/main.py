@@ -1,5 +1,6 @@
 import server
 import tkinter as tk
+import pygame
 from tkinter import messagebox
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
@@ -14,9 +15,19 @@ def Splash():
         label = tk.Label(splash, image=photo)
         label.image = photo 
         label.pack()
+        
         splash.after(3000, teamRegistration) 
+        #sound
+        splash.bind("<Escape>", lambda event: (playSound("..assets/sounds/Photon Close Program.wav")))
     except Exception as e:
         print(f"Error loading image: {e}")
+
+def playSound(path):
+    try:
+        pygame.mixer.music.load(path)
+        pygame.mixer.music.play()
+    except Exception as e:
+        print(f"Error playing sound: {e}")
 
 def teamRegistration():
     #initialize lists
@@ -264,6 +275,9 @@ def clearEntries(redEntries, blueEntries):
     # server.clearEntries()
 
 def countdown(count, redTeam, blueTeam):
+    #sound
+    playSound("..assets/sounds/Photon Start.wav")
+    
     try: 
         screen_width = Counter.winfo_screenwidth() 
         screen_height = Counter.winfo_screenheight() 
@@ -308,6 +322,8 @@ def update_timer(label, remaining_time):
         time_format = f"{mins:02}:{secs:02}"
         label.config(text=f"Time Remaining: {time_format}")
         label.after(1000, update_timer, label, remaining_time - 1)
+        if remaining_time == 1:
+            playSound("../assets/sounds/Photon Exit.wav")
     else:
         label.config(text="Time Remaining: 00:00")
 
