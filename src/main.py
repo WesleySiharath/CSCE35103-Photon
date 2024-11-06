@@ -278,6 +278,8 @@ def countdown(count, redTeam, blueTeam):
         if count > 0:
             Counter.after(1000, countdown, count - 1, redTeam, blueTeam)
         elif count == 0:
+            # send start code
+            server.send_code(202)
             GameAction(redTeam, blueTeam)
     except Exception as e:
         print(f"Error loading image for countdown: {e}")
