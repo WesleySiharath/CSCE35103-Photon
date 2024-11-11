@@ -31,11 +31,6 @@ def send_code(code):
     finally:
         UDPClientSocket.close()
     
-    # if code != 221:
-    #     msgFromServer = (UDPClientSocket.recvfrom(bufferSize)[0]).decode("utf-8")
-    #     msg = f"Message from Server: \"{msgFromServer}\""
-    #     print(msg)
-
 # Add new players into db
 def add_player(player_id, codename):
     # if player id  doesn't exists
