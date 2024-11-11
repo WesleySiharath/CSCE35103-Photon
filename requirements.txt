@@ -2,4 +2,4 @@
 pip==24.2
 psycopg2-binary==2.9.9
 pillow==10.4.0
-pygame=2.6.1
+pygame==2.6.1
