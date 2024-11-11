@@ -1,6 +1,8 @@
 import server
 import tkinter as tk
 import pygame
+import os
+import random
 from tkinter import messagebox
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
@@ -17,10 +19,43 @@ def Splash():
         label.pack()
         
         splash.after(3000, teamRegistration) 
-        #sound
-        splash.bind("<Escape>", lambda event: (playSound("../assets/sounds/PhotonCloseProgram.wav")))
+        
     except Exception as e:
         print(f"Error loading image: {e}")
+
+def playGameMusic():
+    try:
+        folder = "../assets/photon_tracks"
+        tracks = [os.path.join(folder, track) for track in os.listdir(folder)]
+        
+        if not tracks:
+            print("in terms of music there is no music :(")
+            return
+        
+        pygame.mixer.init()
+        pygame.mixer.music.set_endevent(pygame.USEREVENT)
+        
+        def playNextTrack():
+            track = random.choice(tracks)
+            pygame.mixer.music.load(track)
+            pygame.mixer.music.play()
+            
+        playNextTrack()
+        
+        def musicEndevent():
+            for event in pygame.event.get():
+                if event.type == pygame.USEREVENT:
+                    playNextTrack()
+            splash.after(100, musicEndevent)
+            
+        musicEndevent()
+        
+    except Exception as e:
+        print(f"Error playing background music: {e}")
+        
+def stopMusic():
+    if pygame.mixer.get_init():
+        pygame.mixer.music.stop()
 
 def playSound(path):
     try:
@@ -118,7 +153,7 @@ def teamRegistration():
     #keyboard inputs to start game/countdown, clear player entries, and close window
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
     registration.bind("<F5>", lambda event: end_registration(registration))  
-    registration.bind("<Escape>", lambda event: registration.destroy())  
+    registration.bind("<Escape>", lambda event: (playSound("..assets/sounds/Photon Close Program.wav")), registration.destroy())  
 
     # TEST: return button adds entries from each team 
     # registration.bind("<Return>", lambda event: (submitPlayers(redEntries, "Red Team"), submitPlayers(blueEntries, "Blue Team")))
@@ -276,9 +311,6 @@ def clearEntries(redEntries, blueEntries):
     # server.clearEntries()
 
 def countdown(count, redTeam, blueTeam):
-    #sound
-    playSound("../assets/photon_tracks/Track01.mp3")
-    
     try: 
         screen_width = Counter.winfo_screenwidth() 
         screen_height = Counter.winfo_screenheight() 
@@ -312,6 +344,8 @@ def startCountdown(redTeam, blueTeam):
    label.pack(pady=20)
    
    countdown_time = 30
+   #sound
+   playSound("..assets/sounds/Photon Start.wav")
    countdown(countdown_time, redTeam, blueTeam)
    
    Counter.mainloop() 
@@ -323,10 +357,11 @@ def update_timer(label, remaining_time):
         time_format = f"{mins:02}:{secs:02}"
         label.config(text=f"Time Remaining: {time_format}")
         label.after(1000, update_timer, label, remaining_time - 1)
-        if remaining_time == 1:
-            playSound("../assets/sounds/PhotonExit.wav")
+            
     else:
         label.config(text="Time Remaining: 00:00")
+        stopMusic()
+        playSound("../assets/sounds/PhotonExit.wav")
 
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
@@ -338,6 +373,10 @@ def GameAction(redTeam, blueTeam):
     GameAction.attributes('-fullscreen', True)
     GameAction.configure(bg="black")
     remaining_time = 6 * 60
+    
+    # background music
+    playGameMusic()
+    
     # Title
     timer_label = tk.Label(GameAction, text="Time Remaining: 06:00", font=("Courier New", 24), bg="white", fg="black")
     timer_label.pack(pady=10)
