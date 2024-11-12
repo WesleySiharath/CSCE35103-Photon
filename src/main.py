@@ -65,13 +65,17 @@ def playSound(path):
     except Exception as e:
         print(f"Error playing sound: {e}")
 
-def teamRegistration():
+def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in range(15)]):
     #initialize lists
     redEntries = []
     blueEntries = []
     
     print("Transitioning to team registration...")
-    splash.destroy() 
+    # move splash destroy 
+    try:
+        splash.destroy()
+    except Exception:
+        pass
 
     registration = tk.Tk() 
     registration.title("Team Registration")
@@ -86,7 +90,7 @@ def teamRegistration():
     tk.Label(redFrame, text="Red Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
 
     # Input Fields
-    for _ in range(15): 
+    for i in range(15): 
         rowFrame = tk.Frame(redFrame, bg="#BA1F33")
         rowFrame.pack(pady=5)
 
@@ -101,6 +105,13 @@ def teamRegistration():
         tk.Label(rowFrame, text="Equipment ID:", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         equipmentIdInput = tk.Entry(rowFrame, width=10)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
+        try:
+            if redTeam[i]:
+                idInput.insert(tk.END, redTeam[i]['id'])
+                nameInput.insert(tk.END, redTeam[i]['name'])
+                equipmentIdInput.insert(tk.END, redTeam[i]['equipment_id'])
+        except:
+            pass
 
         redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})  # Save references to the entry widgets
 
@@ -116,7 +127,7 @@ def teamRegistration():
     tk.Label(blueFrame, text="Blue Team", font=("Courier New", 24), bg="#d3d3d3", fg="black").pack(pady=10)
 
     # Input Fields
-    for _ in range(15):  
+    for i in range(15):  
         rowFrame = tk.Frame(blueFrame, bg="#4120BA")
         rowFrame.pack(pady=5)
 
@@ -131,9 +142,16 @@ def teamRegistration():
         tk.Label(rowFrame, text="Equipment ID:", bg="White", fg="Black").pack(side=tk.LEFT, padx=5)
         equipmentIdInput = tk.Entry(rowFrame, width=10)
         equipmentIdInput.pack(side=tk.LEFT, padx=5)
+        try:
+            if blueTeam[i]:
+                idInput.insert(tk.END, blueTeam[i]['id'])
+                nameInput.insert(tk.END, blueTeam[i]['name'])
+                equipmentIdInput.insert(tk.END, blueTeam[i]['equipment_id'])
+        except:
+            pass
 
         blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})
-
+    
     # Submit Button  
     submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="Black")
     submitBlueButton.pack(pady=10)
@@ -150,10 +168,14 @@ def teamRegistration():
     clearFrame = tk.Button(clearFrame, text="F12 \n Clear Entries", command=lambda: clearEntries(redEntries, blueEntries), bg="black", fg="Black") 
     clearFrame.pack(pady=10)
 
+    def endProgram():
+        playSound("../assets/sounds/PhotonCloseProgram.wav")
+        registration.destroy()
+
     #keyboard inputs to start game/countdown, clear player entries, and close window
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
     registration.bind("<F5>", lambda event: end_registration(registration))  
-    registration.bind("<Escape>", lambda event: (playSound("..assets/sounds/Photon Close Program.wav")), registration.destroy())  
+    registration.bind("<Escape>", lambda event: endProgram())  
 
     # TEST: return button adds entries from each team 
     # registration.bind("<Return>", lambda event: (submitPlayers(redEntries, "Red Team"), submitPlayers(blueEntries, "Blue Team")))
@@ -323,7 +345,9 @@ def countdown(count, redTeam, blueTeam):
         label.image = photo 
         
         if count > 0:
-            Counter.after(1000, countdown, count - 1, redTeam, blueTeam)
+            if count == 15:
+                playGameMusic()
+            Counter.after(930, countdown, count - 1, redTeam, blueTeam)
         elif count == 0:
             # send start code
             server.send_code(202)
@@ -345,23 +369,28 @@ def startCountdown(redTeam, blueTeam):
    
    countdown_time = 30
    #sound
-   playSound("..assets/sounds/Photon Start.wav")
+   playSound("../assets/sounds/PhotonStart.wav")
    countdown(countdown_time, redTeam, blueTeam)
    
    Counter.mainloop() 
 
-def update_timer(label, remaining_time):
+def update_timer(button, label, remaining_time, redTeam, blueTeam):
 	
     if remaining_time > 0:
         mins, secs = divmod(remaining_time, 60)
         time_format = f"{mins:02}:{secs:02}"
         label.config(text=f"Time Remaining: {time_format}")
-        label.after(1000, update_timer, label, remaining_time - 1)
+        label.after(1000, update_timer, button, label, remaining_time - 1, redTeam, blueTeam)
             
     else:
+        button.configure(command=lambda: teamRegistration(redTeam, blueTeam))
         label.config(text="Time Remaining: 00:00")
         stopMusic()
         playSound("../assets/sounds/PhotonExit.wav")
+        # send stop code 3 times
+        server.send_code(221)
+        server.send_code(221)
+        server.send_code(221)
 
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
@@ -375,13 +404,12 @@ def GameAction(redTeam, blueTeam):
     remaining_time = 6 * 60
     
     # background music
-    playGameMusic()
+    # playGameMusic()
     
     # Title
     timer_label = tk.Label(GameAction, text="Time Remaining: 06:00", font=("Courier New", 24), bg="white", fg="black")
     timer_label.pack(pady=10)
 	
-    update_timer(timer_label, remaining_time)
     # Create a frame to contain the team frames, aligned horizontally
     teamFrame = tk.Frame(GameAction, bg="white")
     teamFrame.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -423,6 +451,13 @@ def GameAction(redTeam, blueTeam):
     playFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10, pady=10)
     tk.Label(playFrame, text="Game Action", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
 
+    # create button to return to player entry screen
+    buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
+    buttonFrame.place(relx=0.0, rely=1.0, anchor='sw', x=180, y=-20)
+    buttonFrame = tk.Button(buttonFrame, text="Return to player entry screen", bg="black", fg="Black") 
+    buttonFrame.pack(pady=10)
+    
+    update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam)
     GameAction.mainloop()
 
 splash = tk.Tk()
