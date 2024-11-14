@@ -169,7 +169,7 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
     clearFrame.pack(pady=10)
 
     def endProgram():
-        playSound("../assets/sounds/PhotonCloseProgram.wav")
+        playSound("../assets/sounds/fortniteknocked.mp3")
         registration.destroy()
 
     #keyboard inputs to start game/countdown, clear player entries, and close window
@@ -355,8 +355,7 @@ def countdown(count, redTeam, blueTeam):
     except Exception as e:
         print(f"Error loading image for countdown: {e}")
         label.config(text="Error loading image")
-
-        
+   
 def startCountdown(redTeam, blueTeam):
    global label, Counter
    Counter = tk.Tk()
@@ -369,7 +368,7 @@ def startCountdown(redTeam, blueTeam):
    
    countdown_time = 30
    #sound
-   playSound("../assets/sounds/PhotonStart.wav")
+   playSound("../assets/sounds/rumble.mp3")
    countdown(countdown_time, redTeam, blueTeam)
    
    Counter.mainloop() 
@@ -386,7 +385,7 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam):
         button.configure(command=lambda: teamRegistration(redTeam, blueTeam))
         label.config(text="Time Remaining: 00:00")
         stopMusic()
-        playSound("../assets/sounds/PhotonExit.wav")
+        playSound("../assets/sounds/ThatsTheGame.mp3")
         # send stop code 3 times
         server.send_code(221)
         server.send_code(221)
@@ -445,6 +444,21 @@ def GameAction(redTeam, blueTeam):
         rowFrame = tk.Frame(blueFrame, bg="#1A2B98")
         rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5)
         tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
+        
+    # event log and scrollbar
+    eventLog = tk.Frame(GameAction, bg = "white")
+    eventLog.pack(side = tk.BOTTOM, fill = tk.BOTH, expand = True)
+    
+    scrollbar = tk.Scrollbar(eventLog)
+    scrollbar.pack(side = tk.RIGHT, fill = tk.Y)
+    
+    eventLogText = tk.Text(eventLog, height = 10, width = 80, yscroll = scrollbar.set, bg = "black", fg = "white", font = ("Courier New", 14))
+    scrollbar.config(command = eventLogText.yview)
+    
+    # update event log and scroll
+    def updateEventLog(event):
+        eventLogText.insert(tk.END, event + '\n')
+        eventLogText.yview(tk.END)
 
     # Play frame at the bottom
     playFrame = tk.Frame(GameAction, borderwidth=1, relief="solid", bg="white")
