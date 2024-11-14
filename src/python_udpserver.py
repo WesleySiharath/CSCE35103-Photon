@@ -30,7 +30,7 @@ def send_message(socket, message, address):
     msg = str.encode(str(message))
     socket.sendto(msg, address)
 
-def main():
+def udp_server(queue):
     ip = "127.0.0.1"
     recv_port = 7501
     buffer_size = 1024
@@ -49,11 +49,11 @@ def main():
             message, address = bytes_address_pair
             message = message.decode("utf-8")
 
-            print(f"Client Message: \"{message}\"")
-            print(f"Client IP Address: {address}")
+            # print(f"Client Message: \"{message}\"")
+            # print(f"Client IP Address: {address}")
 
             codes = message.split(":")
-            print(codes)
+            # print(codes)
 
             if len(codes) == 1:
                 if message == '202':
@@ -68,10 +68,9 @@ def main():
                 elif codes[1] == '43':
                     handle_code43(broadcast_socket, serverAddressPort)
                 else:
+                    queue.put(codes)
                     send_message(broadcast_socket, codes[1], serverAddressPort)
                     # code[0] hit code[1], add to screen, change points
-                    
-
             else:
                 print("Too many codes!")
 
@@ -81,5 +80,5 @@ def main():
         receive_socket.close()
         broadcast_socket.close()
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()

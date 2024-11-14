@@ -3,9 +3,12 @@ import tkinter as tk
 import pygame
 import os
 import random
+from queue import Queue
+import threading
 from tkinter import messagebox
 from tkinter import PhotoImage
 from PIL import Image, ImageTk
+import python_udpserver
 
 def Splash():
     try:
@@ -392,6 +395,17 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam):
         server.send_code(221)
         server.send_code(221)
 
+def update_playaction(codes_frame):
+    try:
+        if not udp_queue.empty():
+            print(codes_frame)
+            codes_frame.config(text=str(udp_queue.get()))
+    except Exception as e:
+        print(f"Error updating play action: {e}")
+
+    codes_frame.after(50, update_playaction, codes_frame)
+
+
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
 
@@ -450,6 +464,8 @@ def GameAction(redTeam, blueTeam):
     playFrame = tk.Frame(GameAction, borderwidth=1, relief="solid", bg="white")
     playFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10, pady=10)
     tk.Label(playFrame, text="Game Action", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
+    code_label = tk.Label(playFrame, text="0:0", font=("Courier New", 24), bg="white", fg="black")
+    code_label.pack(pady=10)
 
     # create button to return to player entry screen
     buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
@@ -458,13 +474,20 @@ def GameAction(redTeam, blueTeam):
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam)
+    update_playaction(code_label)
     GameAction.mainloop()
 
-splash = tk.Tk()
-splash.title("Splash Screen")
-splash.attributes('-fullscreen', True)  
-splash.configure(bg="#d3d3d3")  
+if __name__ == "__main__":
+    splash = tk.Tk()
+    splash.title("Splash Screen")
+    splash.attributes('-fullscreen', True)  
+    splash.configure(bg="#d3d3d3") 
 
-Splash()
-splash.mainloop()
+    udp_queue = Queue() 
+
+    udp_thread = threading.Thread(target=python_udpserver.udp_server, args=(udp_queue,), daemon=True)
+    udp_thread.start()
+
+    Splash()
+    splash.mainloop()
 
