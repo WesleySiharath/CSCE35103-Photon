@@ -52,16 +52,28 @@ def main():
             print(f"Client Message: \"{message}\"")
             print(f"Client IP Address: {address}")
 
-            if message == '202':
-                handle_code202(broadcast_socket, serverAddressPort)
-            elif message == '221':
-                count = handle_code221(broadcast_socket, serverAddressPort, count)
-            elif message == '53':
-                handle_code53(broadcast_socket, serverAddressPort)
-            elif message == '43':
-                handle_code43(broadcast_socket, serverAddressPort)
+            codes = message.split(":")
+            print(codes)
+
+            if len(codes) == 1:
+                if message == '202':
+                    handle_code202(broadcast_socket, serverAddressPort)
+                elif message == '221':
+                    count = handle_code221(broadcast_socket, serverAddressPort, count)
+                else:
+                    send_message(broadcast_socket, codes[0], serverAddressPort)
+            elif len(codes) == 2:
+                if codes[1] == '53':
+                    handle_code53(broadcast_socket, serverAddressPort)
+                elif codes[1] == '43':
+                    handle_code43(broadcast_socket, serverAddressPort)
+                else:
+                    send_message(broadcast_socket, codes[1], serverAddressPort)
+                    # code[0] hit code[1], add to screen, change points
+                    
+
             else:
-                send_message(broadcast_socket, message, serverAddressPort)
+                print("Too many codes!")
 
     except KeyboardInterrupt:
         print("Server is shutting down")
