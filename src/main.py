@@ -80,7 +80,7 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
     except Exception:
         pass
 
-    registration = tk.Tk() 
+    registration = tk.Toplevel(root) 
     registration.title("Team Registration")
     registration.attributes('-fullscreen', True)  
     registration.configure(bg="#d3d3d3")
@@ -174,6 +174,8 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
     def endProgram():
         playSound("../assets/sounds/fortniteknocked.mp3")
         registration.destroy()
+        root.destroy
+        exit()
 
     #keyboard inputs to start game/countdown, clear player entries, and close window
     registration.bind("<F12>", lambda event: clearEntries(redEntries, blueEntries))
@@ -335,22 +337,17 @@ def clearEntries(redEntries, blueEntries):
     # #clear in server
     # server.clearEntries()
 
-def countdown(count, redTeam, blueTeam):
+def countdown(count, redTeam, blueTeam, images):
+    label.config(image='')
     try: 
-        screen_width = Counter.winfo_screenwidth() 
-        screen_height = Counter.winfo_screenheight() 
-        img_path = f"../assets/countdown_images/{count}.tif"
-        
-        img = Image.open(img_path)
-        img = img.resize((screen_width, screen_height), Image.LANCZOS)
-        photo = ImageTk.PhotoImage(img)
+        photo = ImageTk.PhotoImage(images[count])
         label.config(image=photo)
         label.image = photo 
         
         if count > 0:
             if count == 15:
                 playGameMusic()
-            Counter.after(930, countdown, count - 1, redTeam, blueTeam)
+            Counter.after(930, countdown, count - 1, redTeam, blueTeam, images)
         elif count == 0:
             # send start code
             server.send_code(202)
@@ -358,34 +355,33 @@ def countdown(count, redTeam, blueTeam):
     except Exception as e:
         print(f"Error loading image for countdown: {e}")
         label.config(text="Error loading image")
-   
+
 def startCountdown(redTeam, blueTeam):
    global label, Counter
-   Counter = tk.Tk()
+   Counter = tk.Toplevel(root)
    Counter.title("Countdown Timer")
    Counter.attributes('-fullscreen', True)
    Counter.configure(bg="black")
     
    label = tk.Label(Counter, bg="black")  
    label.pack(pady=20)
-   
-   countdown_time = 30
+
    #sound
    playSound("../assets/sounds/rumble.mp3")
-   countdown(countdown_time, redTeam, blueTeam)
+   countdown(countdown_time, redTeam, blueTeam, images)
    
    Counter.mainloop() 
 
-def update_timer(button, label, remaining_time, redTeam, blueTeam):
+def update_timer(button, label, remaining_time, redTeam, blueTeam, GameAction):
 	
     if remaining_time > 0:
         mins, secs = divmod(remaining_time, 60)
         time_format = f"{mins:02}:{secs:02}"
         label.config(text=f"Time Remaining: {time_format}")
-        label.after(1000, update_timer, button, label, remaining_time - 1, redTeam, blueTeam)
+        label.after(1000, update_timer, button, label, remaining_time - 1, redTeam, blueTeam, GameAction)
             
     else:
-        button.configure(command=lambda: teamRegistration(redTeam, blueTeam))
+        button.configure(command=lambda: (GameAction.destroy(), teamRegistration(redTeam, blueTeam)))
         label.config(text="Time Remaining: 00:00")
         stopMusic()
         playSound("../assets/sounds/ThatsTheGame.mp3")
@@ -397,7 +393,6 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam):
 def update_playaction(codes_frame):
     try:
         if not udp_queue.empty():
-            print(codes_frame)
             codes_frame.config(text=str(udp_queue.get()))
     except Exception as e:
         print(f"Error updating play action: {e}")
@@ -410,14 +405,11 @@ def GameAction(redTeam, blueTeam):
 
     Counter.destroy()
 
-    GameAction = tk.Tk()
+    GameAction = tk.Toplevel(root)
     GameAction.title("Game Action")
     GameAction.attributes('-fullscreen', True)
     GameAction.configure(bg="black")
     remaining_time = 6 * 60
-    
-    # background music
-    # playGameMusic()
     
     # Title
     timer_label = tk.Label(GameAction, text="Time Remaining: 06:00", font=("Courier New", 24), bg="white", fg="black")
@@ -487,12 +479,16 @@ def GameAction(redTeam, blueTeam):
     buttonFrame = tk.Button(buttonFrame, text="Return to player entry screen", bg="black", fg="Black") 
     buttonFrame.pack(pady=10)
     
-    update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam)
+    update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
     update_playaction(code_label)
     GameAction.mainloop()
 
 if __name__ == "__main__":
-    splash = tk.Tk()
+    root = tk.Tk()
+    root.title("Main Window")
+    root.withdraw()
+
+    splash = tk.Toplevel(root)
     splash.title("Splash Screen")
     splash.attributes('-fullscreen', True)  
     splash.configure(bg="#d3d3d3") 
@@ -501,7 +497,20 @@ if __name__ == "__main__":
 
     udp_thread = threading.Thread(target=python_udpserver.udp_server, args=(udp_queue,), daemon=True)
     udp_thread.start()
+    
+    images = []  
+    
+    countdown_time = 30
+    if not images:
+        for i in range(countdown_time + 1):
+            screen_width = splash.winfo_screenwidth() 
+            screen_height = splash.winfo_screenheight() 
+            img_path = f"../assets/countdown_images/{i}.tif"
+
+            img = Image.open(img_path)
+            img = img.resize((screen_width, screen_height), Image.LANCZOS)
+            images.append(img) 
 
     Splash()
-    splash.mainloop()
+    root.mainloop()
 
