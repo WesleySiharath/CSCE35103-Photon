@@ -390,15 +390,44 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam, GameAction):
         server.send_code(221)
         server.send_code(221)
 
-def update_playaction(codes_frame):
+def update_playaction(eventLogText, redTeam, blueTeam):
     try:
         if not udp_queue.empty():
-            codes_frame.config(text=str(udp_queue.get()))
+            data = str(udp_queue.get())
+            data = data.strip("[]")
+            data_list = data.split(",")  
+            hitter = data_list[0].strip().strip("'")
+            hit = data_list[1].strip().strip("'")
+
+            hitter_player = None
+            hit_player = None
+
+            for player in redTeam + blueTeam:
+                if int(player['equipment_id']) == int(hitter):
+                    hitter_player = player
+                if int(player['equipment_id']) == int(hit):
+                    hit_player = player
+            if hitter_player and hit_player:
+                eventLogText.insert(tk.END, "Shooter: ", "default")
+                if hitter_player in redTeam:
+                    eventLogText.insert(tk.END, f"{hitter_player['name']} ", "red")
+                else:
+                    eventLogText.insert(tk.END, f"{hitter_player['name']} ", "blue")
+
+                eventLogText.insert(tk.END, "- Hit: ", "default")
+                if hit_player in redTeam:
+                    eventLogText.insert(tk.END, f"{hit_player['name']}\n", "red")
+                else:
+                    eventLogText.insert(tk.END, f"{hit_player['name']}\n", "blue")
+            else:
+                eventLogText.insert(tk.END, "Error: Player not found\n", "error")
+
+            eventLogText.yview(tk.END)
+
     except Exception as e:
         print(f"Error updating play action: {e}")
 
-    codes_frame.after(50, update_playaction, codes_frame)
-
+    eventLogText.after(50, update_playaction, eventLogText, redTeam, blueTeam)
 
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
@@ -452,15 +481,28 @@ def GameAction(redTeam, blueTeam):
         tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
         
     # event log and scrollbar
-    eventLog = tk.Frame(GameAction, bg = "white")
-    eventLog.pack(side = tk.BOTTOM, fill = tk.BOTH, expand = True)
-    
+    eventLog = tk.Frame(GameAction, bg="white")
+    eventLog.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+
     scrollbar = tk.Scrollbar(eventLog)
-    scrollbar.pack(side = tk.RIGHT, fill = tk.Y)
-    
-    eventLogText = tk.Text(eventLog, height = 10, width = 80, yscroll = scrollbar.set, bg = "black", fg = "white", font = ("Courier New", 14))
-    scrollbar.config(command = eventLogText.yview)
-    
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+    eventLogText = tk.Text(
+    eventLog,
+    height=10,
+    width=80,
+    yscrollcommand=scrollbar.set,
+    bg="black",
+    fg="white",
+    font=("Courier New", 14),
+    wrap=tk.WORD,
+    )
+    scrollbar.config(command=eventLogText.yview)
+    eventLogText.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    eventLogText.tag_configure("red", foreground="red")
+    eventLogText.tag_configure("blue", foreground="blue")
+    eventLogText.tag_configure("default", foreground="white")
+    eventLogText.tag_configure("error", foreground="yellow")
     # update event log and scroll
     def updateEventLog(event):
         eventLogText.insert(tk.END, event + '\n')
@@ -470,9 +512,8 @@ def GameAction(redTeam, blueTeam):
     playFrame = tk.Frame(GameAction, borderwidth=1, relief="solid", bg="white")
     playFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10, pady=10)
     tk.Label(playFrame, text="Game Action", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
-    code_label = tk.Label(playFrame, text="0:0", font=("Courier New", 24), bg="white", fg="black")
-    code_label.pack(pady=10)
-
+    
+    
     # create button to return to player entry screen
     buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     buttonFrame.place(relx=0.0, rely=1.0, anchor='sw', x=180, y=-20)
@@ -480,7 +521,7 @@ def GameAction(redTeam, blueTeam):
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
-    update_playaction(code_label)
+    update_playaction(eventLogText, redTeam, blueTeam)
     GameAction.mainloop()
 
 if __name__ == "__main__":
