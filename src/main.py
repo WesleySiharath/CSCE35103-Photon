@@ -446,7 +446,7 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
 
             elif hit_base == '43' and not base_hit:
                 print("BLUEBASE")
-                ase_hit = True
+                base_hit = True
                 blueTeam_score += 100
             elif hit_base == '53'and not base_hit:
                 print("REDBASE")
