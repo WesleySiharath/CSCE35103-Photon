@@ -544,8 +544,6 @@ def update_team_score_labels(redTeam_score, blueTeam_score, redScoreLabel, blueS
     blueScoreLabel.config(text=f"Blue Team Score: {blueTeam_score}")
     
 if __name__ == "__main__":
-    pygame.init()
-    
     root = tk.Tk()
     root.title("Main Window")
     root.withdraw()
