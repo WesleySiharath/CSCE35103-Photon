@@ -82,7 +82,9 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
 
     registration = tk.Toplevel(root) 
     registration.title("Team Registration")
-    registration.attributes('-fullscreen', True)  
+
+    registration.geometry("%dx%d" % (screen_width, screen_height))
+    # registration.state('zoomed')
     registration.configure(bg="#d3d3d3")
 
     # Red Team Table
@@ -182,8 +184,8 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
     registration.bind("<F5>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: endProgram())  
 
-    # TEST: return button adds entries from each team 
-    # registration.bind("<Return>", lambda event: (submitPlayers(redEntries, "Red Team"), submitPlayers(blueEntries, "Blue Team")))
+    # return button adds entries from each team 
+    registration.bind("<Return>", lambda event: (submitPlayers(redEntries, "Red Team"), submitPlayers(blueEntries, "Blue Team")))
 
     # bind method to registration
     registration.getAllPlayers = getAllPlayers.__get__(registration)
@@ -360,7 +362,7 @@ def startCountdown(redTeam, blueTeam):
    global label, Counter
    Counter = tk.Toplevel(root)
    Counter.title("Countdown Timer")
-   Counter.attributes('-fullscreen', True)
+   Counter.geometry("%dx%d" % (screen_width, screen_height))
    Counter.configure(bg="black")
     
    label = tk.Label(Counter, bg="black")  
@@ -436,7 +438,7 @@ def GameAction(redTeam, blueTeam):
 
     GameAction = tk.Toplevel(root)
     GameAction.title("Game Action")
-    GameAction.attributes('-fullscreen', True)
+    GameAction.geometry("%dx%d" % (screen_width, screen_height))
     GameAction.configure(bg="black")
     remaining_time = 6 * 60
     
@@ -516,7 +518,7 @@ def GameAction(redTeam, blueTeam):
     
     # create button to return to player entry screen
     buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
-    buttonFrame.place(relx=0.0, rely=1.0, anchor='sw', x=180, y=-20)
+    buttonFrame.place(relx=1.0, rely=1.0, anchor='se', x=-20, y=-20)
     buttonFrame = tk.Button(buttonFrame, text="Return to player entry screen", bg="black", fg="Black") 
     buttonFrame.pack(pady=10)
     
@@ -525,13 +527,18 @@ def GameAction(redTeam, blueTeam):
     GameAction.mainloop()
 
 if __name__ == "__main__":
+    pygame.init()
+    
     root = tk.Tk()
     root.title("Main Window")
     root.withdraw()
 
     splash = tk.Toplevel(root)
     splash.title("Splash Screen")
-    splash.attributes('-fullscreen', True)  
+    screen_width = splash.winfo_screenwidth() 
+    screen_height = splash.winfo_screenheight() 
+    splash.geometry("%dx%d" % (screen_width, screen_height))
+
     splash.configure(bg="#d3d3d3") 
 
     udp_queue = Queue() 
@@ -544,8 +551,6 @@ if __name__ == "__main__":
     countdown_time = 30
     if not images:
         for i in range(countdown_time + 1):
-            screen_width = splash.winfo_screenwidth() 
-            screen_height = splash.winfo_screenheight() 
             img_path = f"../assets/countdown_images/{i}.tif"
 
             img = Image.open(img_path)
