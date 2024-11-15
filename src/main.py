@@ -444,18 +444,18 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                     
            
 
-                elif hit_base == '43' and not base_hit:
-                   print("BLUEBASE")
-                   base_hit = True
-                   blueTeam_score += 100
-                elif hit_base == '53'and not base_hit:
-                   print("REDBASE")
-                   base_hit = True
-                   redTeam_score += 100
-                elif hit_base == '53' and base_hit:
-                   print("base hit already")
-                elif hit_base == '43' and base_hit:
-                   print("base hit already")
+            elif hit_base == '43' and not base_hit:
+                print("BLUEBASE")
+                ase_hit = True
+                blueTeam_score += 100
+            elif hit_base == '53'and not base_hit:
+                print("REDBASE")
+                base_hit = True
+                redTeam_score += 100
+            elif hit_base == '53' and base_hit:
+                print("base hit already")
+            elif hit_base == '43' and base_hit:
+                print("base hit already")
             
             else:
                 eventLogText.insert(tk.END, "Error: Player not found\n", "error")
