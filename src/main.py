@@ -416,7 +416,8 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                 elif hit == '53':
                    hit_base = '53'
            
-                    
+
+            eventLogText.config(state=tk.NORMAL) 
             if hitter_player and hit_player:
                 eventLogText.insert(tk.END, "Shooter: ", "default")
                 if hitter_player in redTeam:
@@ -436,26 +437,30 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                     redTeam_score += 10
                 elif hit_player in redTeam and hitter_player in redTeam:
                     redTeam_score -= 10
+                    server.send_code(hitter_player['equipment_id'])
                 elif hit_player in blueTeam and hitter_player in blueTeam:
                     blueTeam_score -= 10
+                    server.send_code(hitter_player['equipment_id'])
                     
            
 
-            elif hit_base == '43' and not base_hit:
-                print("BLUEBASE")
-                base_hit = True
-                blueTeam_score += 100
-            elif hit_base == '53'and not base_hit:
-                print("REDBASE")
-                base_hit = True
-                redTeam_score += 100
-            elif hit_base == '53' and base_hit:
-                print("base hit already")
-            elif hit_base == '43' and base_hit:
-                print("base hit already")
+                elif hit_base == '43' and not base_hit:
+                   print("BLUEBASE")
+                   base_hit = True
+                   blueTeam_score += 100
+                elif hit_base == '53'and not base_hit:
+                   print("REDBASE")
+                   base_hit = True
+                   redTeam_score += 100
+                elif hit_base == '53' and base_hit:
+                   print("base hit already")
+                elif hit_base == '43' and base_hit:
+                   print("base hit already")
             
             else:
                 eventLogText.insert(tk.END, "Error: Player not found\n", "error")
+
+            eventLogText.config(state=tk.DISABLED) 
                 
             update_team_score_labels(redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
             
@@ -533,6 +538,7 @@ def GameAction(redTeam, blueTeam):
     fg="white",
     font=("Courier New", 14),
     wrap=tk.WORD,
+    state=tk.DISABLED
     )
     scrollbar.config(command=eventLogText.yview)
     eventLogText.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
