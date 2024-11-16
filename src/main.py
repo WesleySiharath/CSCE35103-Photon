@@ -184,9 +184,6 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
     registration.bind("<F5>", lambda event: end_registration(registration))  
     registration.bind("<Escape>", lambda event: endProgram())  
 
-    # return button adds entries from each team 
-    registration.bind("<Return>", lambda event: (submitPlayers(redEntries, "Red Team"), submitPlayers(blueEntries, "Blue Team")))
-
     # bind method to registration
     registration.getAllPlayers = getAllPlayers.__get__(registration)
 
@@ -384,6 +381,7 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam, GameAction):
             
     else:
         button.configure(command=lambda: (GameAction.destroy(), teamRegistration(redTeam, blueTeam)))
+        GameAction.bind("<F1>", lambda event: (GameAction.destroy(), teamRegistration(redTeam, blueTeam)))
         label.config(text="Time Remaining: 00:00")
         stopMusic()
         playSound("../assets/sounds/ThatsTheGame.mp3")
@@ -560,7 +558,7 @@ def GameAction(redTeam, blueTeam):
     # create button to return to player entry screen
     buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     buttonFrame.place(relx=1.0, rely=1.0, anchor='se', x=-20, y=-20)
-    buttonFrame = tk.Button(buttonFrame, text="Return to player entry screen", bg="black", fg="Black") 
+    buttonFrame = tk.Button(buttonFrame, text="F1\nReturn to Player Entry Screen", bg="black", fg="Black") 
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
