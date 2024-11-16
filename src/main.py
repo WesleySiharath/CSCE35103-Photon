@@ -392,7 +392,7 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam, GameAction):
         server.send_code(221)
         server.send_code(221)
 
-def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel):
+def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit):
     try:
         if not udp_queue.empty():
             data = str(udp_queue.get())
@@ -403,12 +403,19 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
 
             hitter_player = None
             hit_player = None
-
+            hit_base = None
+			
             for player in redTeam + blueTeam:
                 if int(player['equipment_id']) == int(hitter):
                     hitter_player = player
                 if int(player['equipment_id']) == int(hit):
                     hit_player = player
+       
+                if hit == '43':
+                   hit_base = '43'
+                elif hit == '53':
+                   hit_base = '53'
+           
 
             eventLogText.config(state=tk.NORMAL) 
             if hitter_player and hit_player:
@@ -434,7 +441,22 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                 elif hit_player in blueTeam and hitter_player in blueTeam:
                     blueTeam_score -= 10
                     server.send_code(hitter_player['equipment_id'])
+                    
+           
 
+            elif hit_base == '43' and not base_hit:
+                print("BLUEBASE")
+                base_hit = True
+                blueTeam_score += 100
+            elif hit_base == '53'and not base_hit:
+                print("REDBASE")
+                base_hit = True
+                redTeam_score += 100
+            elif hit_base == '53' and base_hit:
+                print("base hit already")
+            elif hit_base == '43' and base_hit:
+                print("base hit already")
+            
             else:
                 eventLogText.insert(tk.END, "Error: Player not found\n", "error")
 
@@ -447,13 +469,13 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
     except Exception as e:
         print(f"Error updating play action: {e}")
 
-    eventLogText.after(50, update_playaction, eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
+    eventLogText.after(50, update_playaction, eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit)
 
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
 
     Counter.destroy()
-	
+    base_hit = False
     GameAction = tk.Toplevel(root)
     GameAction.title("Game Action")
     GameAction.geometry("%dx%d" % (screen_width, screen_height))
@@ -542,7 +564,7 @@ def GameAction(redTeam, blueTeam):
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
-    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
+    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit)
     GameAction.mainloop()
     
 def update_team_score_labels(redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel):

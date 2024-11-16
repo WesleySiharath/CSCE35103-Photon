@@ -54,7 +54,6 @@ def udp_server(queue):
 
             codes = message.split(":")
             # print(codes)
-
             if len(codes) == 1:
                 if message == '202':
                     handle_code202(broadcast_socket, serverAddressPort)
@@ -63,12 +62,12 @@ def udp_server(queue):
                 else:
                     send_message(broadcast_socket, codes[0], serverAddressPort)
             elif len(codes) == 2:
+                queue.put(codes)
                 if codes[1] == '53':
                     handle_code53(broadcast_socket, serverAddressPort)
                 elif codes[1] == '43':
                     handle_code43(broadcast_socket, serverAddressPort)
                 else:
-                    queue.put(codes)
                     send_message(broadcast_socket, codes[1], serverAddressPort)
                     # code[0] hit code[1], add to screen, change points
             else:
