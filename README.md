@@ -52,7 +52,7 @@ Run `pip install -r requirements.txt` in root directory to install needed depend
 pip install -r requirements.txt
 ```
 
-## 6. Run script to run program (opens two terminals for udp server and client)
+## 6. Run script to run program (opens two terminals for traffic generator and client)
 ```
 ./script.sh
 ```
@@ -69,13 +69,15 @@ In other terminal, make sure you are in the root directory of the repository to 
 ```
 cd src
 ```
-## 3. Run Udp Server First
-```
-python3 python_udpserver.py
-```
-## 4. Run main.py in other terminal for program
+## 3. Run main.py for program
 ```
 python3 main.py
+```
+## 4. Input player information in player entry screen
+
+## 5. Run traffic generator and input player's equipment ids for each team
+```
+python3 python_trafficgenerator_v2.py
 ```
 
 # Program Instructions
@@ -86,3 +88,7 @@ python3 main.py
 - The user can press F12 or the "Clear Entries" button to clear all locked and unlocked entries.
 - After correctly submitting atleast 1 player onto each team, the user can press F5 or the "Start Game" button to go to the countdown screen, which leads to the play action screen after reaching 0.
 
+## Play Action Screen
+- The top of the window shows the time left remaining with each players' and teams' total scores shown below the time
+- The bottom of the window shows every game event
+- When the game has ended, the user can press F1 or the corresponding button to go back to the Player Entry Screen and change player information. Pressing the button before the game has ended does nothing.
