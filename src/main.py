@@ -485,15 +485,9 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
 
             eventLogText.config(state=tk.DISABLED) 
 
-            # # update players score and order
-            # hitter_player['label'].config(text = f"{hitter_player['name']}: {hitter_player['score']}")
-
             # sort teams by score
             sortedRed = []
             sortedBlue = []
-
-            heapify(sortedRed)
-            heapify(sortedBlue)
 
             for player in redTeam:
                 if int(player['equipment_id']) == int(hitter):
@@ -512,18 +506,15 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                 if index == 0 or index == 1:
                     continue
                 score, player, label = heappop(sortedBlue)
-                print(score, player)
                 widget.winfo_children()[0].config(text = f"{player}: {-1 * score}")
 
                 hitter_player['label'] = widget.winfo_children()[0]
 
-
-            # # Red Team Players 
+            # Red Team Players 
             for index, widget in enumerate(redFrame.winfo_children()):
                 if index == 0 or index == 1:
                     continue
                 score, player, label = heappop(sortedRed)
-                print(score, player)
                 widget.winfo_children()[0].config(text = f"{player}: {-1 * score}")
 
                 hitter_player['label'] = widget.winfo_children()[0]
