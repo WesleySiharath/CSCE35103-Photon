@@ -417,7 +417,6 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
             hitter_player = None
             hit_player = None
             hit_base = None
-            base_hit = False
 
             for player in redTeam + blueTeam:
                 if int(player['equipment_id']) == int(hitter):
@@ -462,26 +461,23 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                     server.send_code(hitter_player['equipment_id'])
                     
             elif hit_base == '43':
-                base_hit = True
                 redTeam_score += 100
                 hitter_player['score'] += 100
+
+                eventLogText.insert(tk.END, "Shooter: ", "default")
+                eventLogText.insert(tk.END, f"{hitter_player['name']} ", "red")
+                eventLogText.insert(tk.END, "- Hit: ", "default")
+                eventLogText.insert(tk.END, f"BLUE BASE \n", "blue")
             elif hit_base == '53':
-                base_hit = True
                 blueTeam_score += 100
                 hitter_player['score'] += 100
+
+                eventLogText.insert(tk.END, "Shooter: ", "default")
+                eventLogText.insert(tk.END, f"{hitter_player['name']} ", "blue")
+                eventLogText.insert(tk.END, "- Hit: ", "default")
+                eventLogText.insert(tk.END, f"RED BASE \n", "red")
             else:
                 eventLogText.insert(tk.END, "Error: Player not found\n", "error")
-                
-            if base_hit == True:
-               eventLogText.insert(tk.END, "Shooter: ", "default")
-               if hitter_player in redTeam:
-                   eventLogText.insert(tk.END, f"{hitter_player['name']} ", "red")
-                   eventLogText.insert(tk.END, "- Hit: ", "default")
-                   eventLogText.insert(tk.END, f"BLUE BASE \n", "blue")
-               else:
-                   eventLogText.insert(tk.END, f"{hitter_player['name']} ", "blue")
-                   eventLogText.insert(tk.END, "- Hit: ", "default")
-                   eventLogText.insert(tk.END, f"RED BASE \n", "red")
 
             eventLogText.config(state=tk.DISABLED) 
 
