@@ -390,7 +390,7 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam, GameAction):
         server.send_code(221)
         server.send_code(221)
 
-def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit):
+def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel):
     try:
         if not udp_queue.empty():
             data = str(udp_queue.get())
@@ -402,7 +402,7 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
             hitter_player = None
             hit_player = None
             hit_base = None
-			
+            base_hit = False
             for player in redTeam + blueTeam:
                 if int(player['equipment_id']) == int(hitter):
                     hitter_player = player
@@ -413,7 +413,7 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                    hit_base = '43'
                 elif hit == '53':
                    hit_base = '53'
-           
+			
 
             eventLogText.config(state=tk.NORMAL) 
             if hitter_player and hit_player:
@@ -442,21 +442,27 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                     
            
 
-            elif hit_base == '43' and not base_hit:
+            elif hit_base == '43':
                 print("BLUEBASE")
                 base_hit = True
-                blueTeam_score += 100
-            elif hit_base == '53'and not base_hit:
+                redTeam_score += 100
+            elif hit_base == '53':
                 print("REDBASE")
                 base_hit = True
-                redTeam_score += 100
-            elif hit_base == '53' and base_hit:
-                print("base hit already")
-            elif hit_base == '43' and base_hit:
-                print("base hit already")
-            
+                blueTeam_score += 100
             else:
                 eventLogText.insert(tk.END, "Error: Player not found\n", "error")
+                
+            if base_hit == True:
+               eventLogText.insert(tk.END, "Shooter: ", "default")
+               if hitter_player in redTeam:
+                   eventLogText.insert(tk.END, f"{hitter_player['name']} ", "red")
+                   eventLogText.insert(tk.END, "- Hit: ", "default")
+                   eventLogText.insert(tk.END, f"BLUE BASE \n", "blue")
+               else:
+                   eventLogText.insert(tk.END, f"{hitter_player['name']} ", "blue")
+                   eventLogText.insert(tk.END, "- Hit: ", "default")
+                   eventLogText.insert(tk.END, f"RED BASE \n", "red")
 
             eventLogText.config(state=tk.DISABLED) 
                 
@@ -467,13 +473,12 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
     except Exception as e:
         print(f"Error updating play action: {e}")
 
-    eventLogText.after(50, update_playaction, eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit)
+    eventLogText.after(50, update_playaction, eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
 
 def GameAction(redTeam, blueTeam):
     print("Transitioning to GameAction...")
 
     Counter.destroy()
-    base_hit = False
     GameAction = tk.Toplevel(root)
     GameAction.title("Game Action")
     GameAction.geometry("%dx%d" % (screen_width, screen_height))
@@ -562,7 +567,7 @@ def GameAction(redTeam, blueTeam):
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
-    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit)
+    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
     GameAction.mainloop()
     
 def update_team_score_labels(redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel):
