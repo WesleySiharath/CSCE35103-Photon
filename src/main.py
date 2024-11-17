@@ -337,7 +337,7 @@ def clearEntries(redEntries, blueEntries):
     # #clear in server
     # server.clearEntries()
 
-def countdown(count, redTeam, blueTeam, images):
+def countdown(count, redTeam, blueTeam, images,timer_add):
     label.config(image='')
     try: 
         photo = ImageTk.PhotoImage(images[count])
@@ -347,7 +347,11 @@ def countdown(count, redTeam, blueTeam, images):
         if count > 0:
             if count == 15:
                 playGameMusic()
-            Counter.after(930, countdown, count - 1, redTeam, blueTeam, images)
+            if count == 5:
+                timer_add = 550
+            if count == 1:
+                 timer_add = 610
+            Counter.after(930+timer_add, countdown, count - 1, redTeam, blueTeam, images, timer_add)
         elif count == 0:
             # send start code
             server.send_code(202)
@@ -362,13 +366,13 @@ def startCountdown(redTeam, blueTeam):
    Counter.title("Countdown Timer")
    Counter.geometry("%dx%d" % (screen_width, screen_height))
    Counter.configure(bg="black")
-    
+   timer_add = 0
    label = tk.Label(Counter, bg="black")  
    label.pack(pady=20)
 
    #sound
    playSound("../assets/sounds/rumble.mp3")
-   countdown(countdown_time, redTeam, blueTeam, images)
+   countdown(countdown_time, redTeam, blueTeam, images, timer_add)
    
    Counter.mainloop() 
 
