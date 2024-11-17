@@ -122,7 +122,7 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
         redEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})  # Save references to the entry widgets
 
     # Submit Button  
-    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: submitPlayers(redEntries, "Red Team"), bg="black", fg="Black")
+    submitRed = tk.Button(redFrame, text="Submit Red Team", command=lambda: submitPlayers(redEntries, "Red Team"), bg="black", fg="white")
     submitRed.pack(pady=10)
 
     # Blue Team Table
@@ -159,7 +159,7 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
         blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})
     
     # Submit Button  
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="black")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="white")
     submitBlueButton.pack(pady=10)
     
     #create start game button
