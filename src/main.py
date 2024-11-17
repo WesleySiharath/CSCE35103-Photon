@@ -487,6 +487,7 @@ def GameAction(redTeam, blueTeam):
     remaining_time = 6 * 60
     redTeam_score = 0
     blueTeam_score = 0
+    
     # Title
     timer_label = tk.Label(GameAction, text="Time Remaining: 06:00", font=("Courier New", 24), bg="white", fg="black")
     timer_label.pack(pady=10)
@@ -505,12 +506,15 @@ def GameAction(redTeam, blueTeam):
     redScoreLabel = tk.Label(redFrame, text=f"Red Team Score: {redTeam_score}", font=("Courier New", 24), bg="white", fg="black")
     redScoreLabel.pack(side=tk.TOP, padx=10, anchor="w")
 
+    #sort red players by score
+    sortedRed = sorted(redTeam, key=lambda p: individualScores[p['name']], reverse=True)
+    
     # Red Team Players
-    for player in redTeam:
+    for player in sortedRed:
         rowFrame = tk.Frame(redFrame, bg="#981A2B")
         rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5)
         tk.Label(rowFrame, text=f"{player['name']}: {individualScores[player['name']]}", bg="#981A2B", fg="white").pack(anchor="w")
-
+    
     # Blue Team Frame
     blueFrame = tk.Frame(teamFrame, borderwidth=1, relief="solid", bg="#1A2B98")
     blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -521,8 +525,11 @@ def GameAction(redTeam, blueTeam):
     blueScoreLabel = tk.Label(blueFrame, text=f"Blue Team Score: {blueTeam_score}", font=("Courier New", 24), bg="white", fg="black")
     blueScoreLabel.pack(side=tk.TOP, padx=10, anchor="w")
     
+    #sort blue players by score
+    sortedBlue = sorted(blueTeam, key=lambda p: individualScores[p['name']], reverse=True)
+    
     # Blue Team Players
-    for player in blueTeam:
+    for player in sortedBlue:
         rowFrame = tk.Frame(blueFrame, bg="#1A2B98")
         rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5)
         tk.Label(rowFrame, text=f"{player['name']}: {individualScores[player['name']]}", bg="#1A2B98", fg="white").pack(anchor="w")
@@ -551,6 +558,7 @@ def GameAction(redTeam, blueTeam):
     eventLogText.tag_configure("blue", foreground="blue")
     eventLogText.tag_configure("default", foreground="white")
     eventLogText.tag_configure("error", foreground="yellow")
+    
     # update event log and scroll
     def updateEventLog(event):
         eventLogText.insert(tk.END, event + '\n')
@@ -560,7 +568,6 @@ def GameAction(redTeam, blueTeam):
     playFrame = tk.Frame(GameAction, borderwidth=1, relief="solid", bg="white")
     playFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10, pady=10)
     tk.Label(playFrame, text="Game Action", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
-    
     
     # create button to return to player entry screen
     buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
