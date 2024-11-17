@@ -559,10 +559,27 @@ def GameAction(redTeam, blueTeam):
     eventLogText.tag_configure("default", foreground="white")
     eventLogText.tag_configure("error", foreground="yellow")
     
-    # update event log and scroll
-    def updateEventLog(event):
-        eventLogText.insert(tk.END, event + '\n')
-        eventLogText.yview(tk.END)
+    # # update event log and scroll (unused)
+    # def updateEventLog(event):
+    #     eventLogText.insert(tk.END, event + '\n')
+    #     eventLogText.yview(tk.END)
+    
+    #flash high score team (pause)
+    def flashHighScore():
+        nonlocal redTeam_score, blueTeam_score
+        
+        if redTeam_score > blueTeam_score:
+            current_bg = redScoreLabel.cget("bg")
+            new_bg = "yellow" if current_bg == "white" else "white"
+            redScoreLabel.config(bg=new_bg)
+        elif blueTeam_score > redTeam_score:
+            current_bg = blueScoreLabel.cget("bg")
+            new_bg = "yellow" if current_bg == "white" else "white"
+            blueScoreLabel.config(bg=new_bg)
+    
+        GameAction.after(500, flashHighScore)
+        
+    flashHighScore()
 
     # Play frame at the bottom
     playFrame = tk.Frame(GameAction, borderwidth=1, relief="solid", bg="white")
