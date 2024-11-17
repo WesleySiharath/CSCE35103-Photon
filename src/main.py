@@ -159,19 +159,19 @@ def teamRegistration(redTeam = [{} for i in range(15)], blueTeam = [{} for i in 
         blueEntries.append({'id': idInput, 'name': nameInput, 'equipment_id': equipmentIdInput, 'state': "normal"})
     
     # Submit Button  
-    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="Black")
+    submitBlueButton = tk.Button(blueFrame, text="Submit Blue Team", command=lambda: submitPlayers(blueEntries, "Blue Team"), bg="black", fg="black")
     submitBlueButton.pack(pady=10)
     
     #create start game button
     startFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     startFrame.place(relx=0.0, rely=1.0, anchor='sw', x=20, y=-20)
-    startGame = tk.Button(startFrame, text="F5 \n Start Game", command=lambda: end_registration(registration), bg="black", fg="Black") 
+    startGame = tk.Button(startFrame, text="F5 \n Start Game", command=lambda: end_registration(registration), bg="black", fg="white") 
     startGame.pack(pady=10)
     
     #create f12 button
     clearFrame = tk.Frame(registration, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     clearFrame.place(relx=0.0, rely=1.0, anchor='sw', x=180, y=-20)
-    clearFrame = tk.Button(clearFrame, text="F12 \n Clear Entries", command=lambda: clearEntries(redEntries, blueEntries), bg="black", fg="Black") 
+    clearFrame = tk.Button(clearFrame, text="F12 \n Clear Entries", command=lambda: clearEntries(redEntries, blueEntries), bg="black", fg="white") 
     clearFrame.pack(pady=10)
 
     def endProgram():
@@ -617,7 +617,7 @@ def GameAction(redTeam, blueTeam):
     # create button to return to player entry screen
     buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
     buttonFrame.place(relx=1.0, rely=1.0, anchor='se', x=-20, y=-20)
-    buttonFrame = tk.Button(buttonFrame, text="F1\nReturn to Player Entry Screen", bg="black", fg="Black") 
+    buttonFrame = tk.Button(buttonFrame, text="F1\nReturn to Player Entry Screen", bg="black", fg="white") 
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
