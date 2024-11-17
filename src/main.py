@@ -390,7 +390,7 @@ def update_timer(button, label, remaining_time, redTeam, blueTeam, GameAction):
         server.send_code(221)
         server.send_code(221)
 
-def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel):
+def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit, individualScores):
     try:
         if not udp_queue.empty():
             data = str(udp_queue.get())
@@ -428,21 +428,26 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                     eventLogText.insert(tk.END, f"{hit_player['name']}\n", "red")
                 else:
                     eventLogText.insert(tk.END, f"{hit_player['name']}\n", "blue")
-                    
+                
+                #scores
                 if hit_player in redTeam and hitter_player in blueTeam:
                     blueTeam_score += 10
+                    individualScores[hitter_player['name']] += 10
+                    individualScores[hit_player['name']] -= 10
                 elif hit_player in blueTeam and hitter_player in redTeam:
                     redTeam_score += 10
+                    individualScores[hitter_player['name']] += 10
+                    individualScores[hit_player['name']] -= 10
                 elif hit_player in redTeam and hitter_player in redTeam:
                     redTeam_score -= 10
+                    individualScores[hitter_player['name']] -= 10
                     server.send_code(hitter_player['equipment_id'])
                 elif hit_player in blueTeam and hitter_player in blueTeam:
                     blueTeam_score -= 10
+                    individualScores[hitter_player['name']] -= 10
                     server.send_code(hitter_player['equipment_id'])
                     
-           
-
-            elif hit_base == '43':
+            elif hit_base == '43' and not base_hit:
                 print("BLUEBASE")
                 base_hit = True
                 redTeam_score += 100
@@ -476,6 +481,7 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
     eventLogText.after(50, update_playaction, eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
 
 def GameAction(redTeam, blueTeam):
+    individualScores = {player['name']: 0 for player in redTeam + blueTeam}
     print("Transitioning to GameAction...")
 
     Counter.destroy()
@@ -486,6 +492,7 @@ def GameAction(redTeam, blueTeam):
     remaining_time = 6 * 60
     redTeam_score = 0
     blueTeam_score = 0
+    
     # Title
     timer_label = tk.Label(GameAction, text="Time Remaining: 06:00", font=("Courier New", 24), bg="white", fg="black")
     timer_label.pack(pady=10)
@@ -504,12 +511,15 @@ def GameAction(redTeam, blueTeam):
     redScoreLabel = tk.Label(redFrame, text=f"Red Team Score: {redTeam_score}", font=("Courier New", 24), bg="white", fg="black")
     redScoreLabel.pack(side=tk.TOP, padx=10, anchor="w")
 
+    #sort red players by score
+    sortedRed = sorted(redTeam, key=lambda p: individualScores[p['name']], reverse=True)
+    
     # Red Team Players
-    for player in redTeam:
+    for player in sortedRed:
         rowFrame = tk.Frame(redFrame, bg="#981A2B")
         rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5)
-        tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
-
+        tk.Label(rowFrame, text=f"{player['name']}: {individualScores[player['name']]}", bg="#981A2B", fg="white").pack(anchor="w")
+    
     # Blue Team Frame
     blueFrame = tk.Frame(teamFrame, borderwidth=1, relief="solid", bg="#1A2B98")
     blueFrame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -519,11 +529,15 @@ def GameAction(redTeam, blueTeam):
     blueHeaderFrame.pack(side=tk.TOP, pady=5, fill=tk.X)
     blueScoreLabel = tk.Label(blueFrame, text=f"Blue Team Score: {blueTeam_score}", font=("Courier New", 24), bg="white", fg="black")
     blueScoreLabel.pack(side=tk.TOP, padx=10, anchor="w")
+    
+    #sort blue players by score
+    sortedBlue = sorted(blueTeam, key=lambda p: individualScores[p['name']], reverse=True)
+    
     # Blue Team Players
-    for player in blueTeam:
+    for player in sortedBlue:
         rowFrame = tk.Frame(blueFrame, bg="#1A2B98")
         rowFrame.pack(side=tk.TOP, fill=tk.X, pady=5)
-        tk.Label(rowFrame, text=player['name'], bg="white", fg="black").pack(side=tk.LEFT, padx=10, anchor="w")
+        tk.Label(rowFrame, text=f"{player['name']}: {individualScores[player['name']]}", bg="#1A2B98", fg="white").pack(anchor="w")
         
     # event log and scrollbar
     eventLog = tk.Frame(GameAction, bg="white")
@@ -549,16 +563,28 @@ def GameAction(redTeam, blueTeam):
     eventLogText.tag_configure("blue", foreground="blue")
     eventLogText.tag_configure("default", foreground="white")
     eventLogText.tag_configure("error", foreground="yellow")
-    # update event log and scroll
-    def updateEventLog(event):
-        eventLogText.insert(tk.END, event + '\n')
-        eventLogText.yview(tk.END)
+    
+    #flash high score team (pause)
+    def flashHighScore():
+        nonlocal redTeam_score, blueTeam_score
+        
+        if redTeam_score > blueTeam_score:
+            current_bg = redScoreLabel.cget("bg")
+            new_bg = "yellow" if current_bg == "white" else "white"
+            redScoreLabel.config(bg=new_bg)
+        elif blueTeam_score > redTeam_score:
+            current_bg = blueScoreLabel.cget("bg")
+            new_bg = "yellow" if current_bg == "white" else "white"
+            blueScoreLabel.config(bg=new_bg)
+    
+        GameAction.after(500, flashHighScore)
+        
+    flashHighScore()
 
     # Play frame at the bottom
     playFrame = tk.Frame(GameAction, borderwidth=1, relief="solid", bg="white")
     playFrame.pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True, padx=10, pady=10)
     tk.Label(playFrame, text="Game Action", font=("Courier New", 24), bg="white", fg="black").pack(pady=10)
-    
     
     # create button to return to player entry screen
     buttonFrame = tk.Frame(GameAction, borderwidth=2, relief="solid", bg="black",  highlightbackground="white", highlightthickness=2)
@@ -567,7 +593,8 @@ def GameAction(redTeam, blueTeam):
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
-    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
+    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, base_hit, individualScores)
+
     GameAction.mainloop()
     
 def update_team_score_labels(redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel):
