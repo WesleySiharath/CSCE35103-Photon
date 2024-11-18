@@ -409,7 +409,7 @@ def update_team_score_labels(redTeam_score, blueTeam_score, redScoreLabel, blueS
         new_bg = "#1A2B98" if current_bg == "white" else "white"
         blueScoreLabel.config(bg=new_bg)
 
-def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, blueFrame, redFrame):
+def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, blueFrame, redFrame, base_hitters):
     try:
         if not udp_queue.empty():
             data = str(udp_queue.get())
@@ -467,6 +467,7 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
             elif hit_base == '43':
                 redTeam_score += 100
                 hitter_player['score'] += 100
+                base_hitters.append(hitter_player['name'])
 
                 eventLogText.insert(tk.END, "Shooter: ", "default")
                 eventLogText.insert(tk.END, f"{hitter_player['name']} ", "red")
@@ -475,6 +476,7 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
             elif hit_base == '53':
                 blueTeam_score += 100
                 hitter_player['score'] += 100
+                base_hitters.append(hitter_player['name'])
 
                 eventLogText.insert(tk.END, "Shooter: ", "default")
                 eventLogText.insert(tk.END, f"{hitter_player['name']} ", "blue")
@@ -506,18 +508,30 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
                 if index == 0 or index == 1:
                     continue
                 score, player, label = heappop(sortedBlue)
-                widget.winfo_children()[0].config(text = f"{player}: {-1 * score}")
 
-                hitter_player['label'] = widget.winfo_children()[0]
+                # keep stylized B
+                if player in base_hitters:
+                    widget.winfo_children()[0].config(text = f"{player}: {-1 * score} B")
+                # normal hit
+                else:   
+                    widget.winfo_children()[0].config(text = f"{player}: {-1 * score}")
+
+                label = widget.winfo_children()[0]
 
             # Red Team Players 
             for index, widget in enumerate(redFrame.winfo_children()):
                 if index == 0 or index == 1:
                     continue
                 score, player, label = heappop(sortedRed)
-                widget.winfo_children()[0].config(text = f"{player}: {-1 * score}")
 
-                hitter_player['label'] = widget.winfo_children()[0]
+                # keep stylized B
+                if player in base_hitters:
+                    widget.winfo_children()[0].config(text = f"{player}: {-1 * score} B")
+                # normal hit
+                else:   
+                    widget.winfo_children()[0].config(text = f"{player}: {-1 * score}")
+
+                label = widget.winfo_children()[0]
 
             eventLogText.yview(tk.END)
 
@@ -525,9 +539,10 @@ def update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_s
         print(f"Error updating play action: {e}")
 
     update_team_score_labels(redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel)
-    eventLogText.after(250, update_playaction, eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, blueFrame, redFrame)
+    eventLogText.after(250, update_playaction, eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, blueFrame, redFrame, base_hitters)
 
 def GameAction(redTeam, blueTeam):
+    base_hitters = []
     for player in redTeam + blueTeam:
         player["score"] = 0
 
@@ -621,7 +636,7 @@ def GameAction(redTeam, blueTeam):
     buttonFrame.pack(pady=10)
     
     update_timer(buttonFrame, timer_label, remaining_time, redTeam, blueTeam, GameAction)
-    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, blueFrame, redFrame)
+    update_playaction(eventLogText, redTeam, blueTeam, redTeam_score, blueTeam_score, redScoreLabel, blueScoreLabel, blueFrame, redFrame, base_hitters)
 
     GameAction.mainloop()
     
